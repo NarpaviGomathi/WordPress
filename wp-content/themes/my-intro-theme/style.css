@@ -1,35 +1,20 @@
 /*
-Theme Name: My Introduction Theme
-Theme URI: http://yourwebsite.com
-Author: Your Name
-Description: A simple WordPress theme for personal introduction
-Version: 1.0
-License: GPLv2 or later
-Text Domain: my-intro-theme
+ Theme Name: My Intro Theme
+ Theme URI: http://example.com
+ Author: Your Name
+ Author URI: http://example.com
+ Description: A custom theme for my introduction page.
+ Version: 1.0
+ License: GNU General Public License v2 or later
+ License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ Tags: custom-theme, personal, introduction
+ Text Domain: my-intro-theme
 */
+
+/* Add your custom styles below */
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
 }
-header {
-    background: #0073aa;
-    color: #ffffff;
-    padding: 20px;
-}
-h1, h2 {
-    color: #0073aa;
-}
-section {
-    padding: 20px;
-}
-footer {
-    background: #222;
-    color: #ffffff;
-    padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
+
