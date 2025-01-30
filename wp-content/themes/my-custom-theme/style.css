@@ -1,0 +1,118 @@
+/*
+Theme Name: My Custom Theme
+Theme URI: http://example.com/my-custom-theme
+Author: Your Name
+Author URI: http://example.com
+Description: A custom WordPress theme tailored for my project with responsive design and modern styling.
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: custom, wordpress, responsive, modern
+Text Domain: my-custom-theme
+*/
+
+/* Global Styles */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+/* Navigation Menu */
+nav {
+    background-color: #444;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+}
+
+nav ul li a:hover {
+    background-color: #666;
+}
+
+/* Main Content Area */
+.content {
+    padding: 40px;
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+.content h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    nav ul li {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    nav ul li a {
+        font-size: 1.1rem;
+    }
+
+    .content {
+        padding: 20px;
+    }
+}
