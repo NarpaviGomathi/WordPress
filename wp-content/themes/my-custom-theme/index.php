@@ -1,8 +1,13 @@
 <?php get_header(); ?>
 
-<div class="content">
-    <h1>Welcome to My Custom WordPress Theme</h1>
-    <p>This is a custom theme built by me!</p>
-</div>
+<main>
+    <h1>Welcome to My Custom Theme</h1>
+    <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+        <article>
+            <h2><?php the_title(); ?></h2>
+            <p><?php the_content(); ?></p>
+        </article>
+    <?php endwhile; endif; ?>
+</main>
 
 <?php get_footer(); ?>
