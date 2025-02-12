@@ -11,9 +11,7 @@ metadata:
 data:
   DB_NAME: "wordpress_db"
   DB_USER: "wordpress_user"
-  DB_PASSWORD: "yourpassword"
-  DB_HOST: "10.184.49.241"  # External MariaDB host IP
-
+  DB_HOST: "mariadb.wordpress.svc.cluster.local"  # Internal DNS
 ---
 apiVersion: v1
 kind: Secret
@@ -29,7 +27,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: wordpress-pv
-  namespace: wordpress
 spec:
   capacity:
     storage: 5Gi
@@ -112,7 +109,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: LoadBalancer
+  type: NodePort  # Use LoadBalancer only if using cloud provider
 ---
 apiVersion: apps/v1
 kind: Deployment
