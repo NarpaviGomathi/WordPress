@@ -11,7 +11,8 @@ metadata:
 data:
   DB_NAME: "wordpress_db"
   DB_USER: "wordpress_user"
-  DB_HOST: "mariadb.wordpress.svc.cluster.local"  # Internal DNS
+  DB_PASSWORD: "yourpassword"
+  DB_HOST: "10.184.49.241"  # External MariaDB host IP
 ---
 apiVersion: v1
 kind: Secret
@@ -27,6 +28,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: wordpress-pv
+  namespace: wordpress
 spec:
   capacity:
     storage: 5Gi
@@ -34,7 +36,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /mnt/data/wordpress
+    path: /mnt/data/wordpress  # Ensure this path exists on the node
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -109,7 +111,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: NodePort  # Use LoadBalancer only if using cloud provider
+  type: LoadBalancer  # Use NodePort if you're not using a cloud provider
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -184,5 +186,4 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
-  clusterIP: None  # Headless service for stable DNS
----
+  clusterIP: None  # (Optional: Use if you need stable DNS for replication)
