@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: wordpress
-        image: your_image_name:latest  # Replace with your image name
+        image: gomathi747/wordpress-docker:latest  # Replace with your image name
         ports:
         - containerPort: 80
         envFrom:
