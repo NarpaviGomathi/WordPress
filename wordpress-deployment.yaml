@@ -1,7 +1,13 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: wordpress
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: wordpress-config
+  namespace: wordpress
 data:
   DB_NAME: "wordpress_db"
   DB_USER: "wordpress_user"
@@ -9,10 +15,47 @@ data:
   DB_HOST: "10.184.49.241"  # External MariaDB host IP
 
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wordpress-secret
+  namespace: wordpress
+type: Opaque
+data:
+  DB_USER: d29yZHByZXNzX3VzZXI=  # Base64 encoded "wordpress_user"
+  DB_PASSWORD: eW91cnBhc3N3b3Jk  # Base64 encoded "yourpassword"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-pv
+  namespace: wordpress
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/wordpress
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress
+  namespace: wordpress
 spec:
   replicas: 1
   selector:
@@ -24,25 +67,44 @@ spec:
         app: wordpress
     spec:
       containers:
-      - name: wordpress
-        image: gomathi747/wordpress-docker:latest  # Replace with your image name
-        ports:
-        - containerPort: 80
-        envFrom:
-        - configMapRef:
-            name: wordpress-config
-        volumeMounts:
-        - name: wordpress-storage
-          mountPath: /var/www/html
+        - name: wordpress
+          image: your_dockerhub_username/wordpress:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: DB_NAME
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: DB_HOST
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: wordpress-storage
+              mountPath: /var/www/html
       volumes:
-      - name: wordpress-storage
-        emptyDir: {}
-
+        - name: wordpress-storage
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: wordpress-service
+  name: wordpress
+  namespace: wordpress
 spec:
   selector:
     app: wordpress
@@ -50,16 +112,80 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  type: LoadBalancer  # Use NodePort if you don't have a LoadBalancer available
-
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: mariadb:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: DB_NAME
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: DB_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: DB_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: mariadb-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: mariadb-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wordpress-pvc
+  name: mariadb-pvc
+  namespace: wordpress
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  namespace: wordpress
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  clusterIP: None  # Headless service for stable DNS
+---
