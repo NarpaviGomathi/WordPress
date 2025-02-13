@@ -51,6 +51,7 @@ RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/database_name_here/${DB_NAME}/" ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/username_here/${DB_USER}/" ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/password_here/${DB_PASSWORD}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/localhost/${DB_HOST}/" ${APACHE_ROOT}/wp-config.php && \
     echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php
 
