@@ -34,7 +34,6 @@ spec:
             - name: wordpress-storage
               mountPath: /var/www/html
       volumes: []
-
 ---
 apiVersion: v1
 kind: Service
