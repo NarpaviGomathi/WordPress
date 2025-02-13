@@ -59,7 +59,7 @@ RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerName 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    ServerAlias www.wordpress.com' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    ServerAlias 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
