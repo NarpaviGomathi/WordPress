@@ -32,9 +32,7 @@ spec:
           volumeMounts:
             - name: wordpress-storage
               mountPath: /var/www/html
-      volumes:
-        - name: wordpress-storage
-          emptyDir: {}  # Change this if you need persistent storage
+      volumes: []
 
 ---
 apiVersion: v1
