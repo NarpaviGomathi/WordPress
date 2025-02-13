@@ -5,7 +5,7 @@ FROM debian:11
 ENV DEBIAN_FRONTEND=noninteractive \
     DB_NAME=wordpress_db \
     DB_USER=wordpress_user \
-    DB_PASSWORD=yourpassword \
+    DB_PASSWORD=mypassword \
     DB_HOST=10.184.49.241 \
     APACHE_ROOT=/var/www/html/wordpress
 
