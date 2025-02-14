@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DB_USER=wordpress_user \
     DB_PASSWORD=mypassword \
     DB_HOST=10.184.49.241 \
-    APACHE_ROOT=/var/www/html/wordpress /
+    APACHE_ROOT=/var/www/html/wordpress 
 
 # Set timezone and install dependencies
 RUN apt update && \
