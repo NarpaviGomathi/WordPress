@@ -75,10 +75,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
     && apachectl -t \
-    && apache2ctl configtest \
-    && systemctl reload apache2 \
-    && systemctl restart apache2 \
-    && systemctl restart mariadb
+    && apache2ctl configtest 
     
 # Remove cache and old build data
 #RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
