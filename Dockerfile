@@ -40,7 +40,8 @@ RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
 RUN a2enmod rewrite
 
 # Clone WordPress repository
-RUN mkdir -p ${APACHE_ROOT} && \
+RUN rm -rf ${APACHE_ROOT} && \
+    mkdir -p ${APACHE_ROOT} && \
     git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
