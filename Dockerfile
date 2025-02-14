@@ -46,6 +46,8 @@ RUN rm -rf ${APACHE_ROOT} && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
     find ${APACHE_ROOT} -type f -exec chmod 644 {} \;
+RUN chmod -R 755  ${APACHE_ROOT}
+RUN chown -R www-data:www-data ${APACHE_ROOT} 
 
 # Configure WordPress wp-config.php
 RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
