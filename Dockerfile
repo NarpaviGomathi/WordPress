@@ -71,6 +71,9 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
+# Delete the existing database and create a new one
+RUN echo "DROP DATABASE IF EXISTS ${DB_NAME}; CREATE DATABASE ${DB_NAME};" | mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
+
 # Enable Apache site and modules
 RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
