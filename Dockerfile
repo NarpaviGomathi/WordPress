@@ -42,7 +42,7 @@ RUN a2enmod rewrite
 # Clone WordPress repository
 RUN rm -rf ${APACHE_ROOT} && \
     mkdir -p ${APACHE_ROOT} && \
-    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} \
+    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
     find ${APACHE_ROOT} -type f -exec chmod 644 {} \;
