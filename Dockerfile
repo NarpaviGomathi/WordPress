@@ -14,15 +14,13 @@ RUN apt-get update && \
     nano \
     rsync \
     software-properties-common \
-    mariadb-server \
     mariadb-client \
     git \
     sudo \
     curl \
-    php8.2 \
     php8.2-cli \
     php8.2-common \
-    php8.2-mysql \
+    php8.2-mysqli \
     php8.2-redis \
     php8.2-snmp \
     php8.2-xml \
