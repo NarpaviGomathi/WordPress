@@ -9,8 +9,7 @@ ENV DB_HOST=10.184.49.241
 ENV APACHE_ROOT=/var/www/html/wordpress/
 
 # Set timezone and install dependencies
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get update && apt-get install -y \
     nano \
     rsync \
     software-properties-common \
@@ -18,18 +17,15 @@ RUN apt-get update && \
     git \
     sudo \
     curl \
-    php8.2-cli \
-    php8.2-common \
-    php8.2-mysqli \
-    php8.2-redis \
-    php8.2-snmp \
-    php8.2-xml \
-    php8.2-zip \
-    php8.2-mbstring \
-    php8.2-curl \
-    libapache2-mod-php \
-    lsb-release && \
+    lsb-release \
+    unzip && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP 8.2 extensions using the built-in Docker PHP tool
+RUN docker-php-ext-install mysqli pdo pdo_mysql opcache
+
+# Install additional PHP modules using PECL
+RUN pecl install redis && docker-php-ext-enable redis
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
