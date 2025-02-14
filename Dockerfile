@@ -80,5 +80,8 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Expose port 80
 EXPOSE 80
 
+
+CMD service mariadb start && apachectl -D FOREGROUND
+
 # Start Apache in the foreground
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+#CMD ["apache2ctl", "-D", "FOREGROUND"]
