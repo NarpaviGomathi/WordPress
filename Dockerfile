@@ -9,9 +9,7 @@ ENV DB_HOST=10.184.49.241
 ENV APACHE_ROOT=/var/www/html/wordpress/
 
 # Set timezone and install dependencies
-RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
-    echo "Asia/Kolkata" > /etc/timezone && \
-    apt update && \
+RUN apt update && \
     apt install -y \
     nano \
     tzdata \
