@@ -73,6 +73,9 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 
 # Delete the existing database and create a new one
 RUN echo "DROP DATABASE IF EXISTS ${DB_NAME}; CREATE DATABASE ${DB_NAME};" | mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
+RUN mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};" && \
+    mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "USE ${DB_NAME};" && \
+    mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME};"
 
 # Enable Apache site and modules
 RUN a2enmod rewrite \
