@@ -1,5 +1,5 @@
  # Use Debian 11 as the base image
-FROM Debian 11
+FROM Debian:11
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
