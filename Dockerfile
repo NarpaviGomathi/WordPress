@@ -75,6 +75,8 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 RUN a2ensite wordpress.com.conf && \
     a2enmod rewrite
 
+# Remove cache and old build data
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Expose port 80
 EXPOSE 80
