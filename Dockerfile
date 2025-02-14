@@ -2,12 +2,11 @@
 FROM php:8.2-apache
 
 # Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive \
-    DB_NAME=wordpress_db \
-    DB_USER=wordpress_user \
-    DB_PASSWORD=mypassword \
-    DB_HOST=10.184.49.241 \
-    APACHE_ROOT=/var/www/html/wordpress
+ENV DB_NAME=wordpress_db
+ENV DB_USER=wordpress_user
+ENV DB_PASSWORD=mypassword
+ENV DB_HOST=10.184.49.241 
+ENV APACHE_ROOT=/var/www/html/wordpress/
 
 # Set timezone and install dependencies
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
