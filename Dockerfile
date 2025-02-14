@@ -1,31 +1,38 @@
-# Use Debian 11 as the base image
-FROM php:8.2-apache
+ # Use Debian 11 as the base image
+FROM Debian 11
 
 # Set environment variables
-ENV DB_NAME=wordpress_db
-ENV DB_USER=wordpress_user
-ENV DB_PASSWORD=mypassword
-ENV DB_HOST=10.184.49.241 
-ENV APACHE_ROOT=/var/www/html/wordpress/
+ENV DEBIAN_FRONTEND=noninteractive \
+    DB_NAME=wordpress_db \
+    DB_USER=wordpress_user \
+    DB_PASSWORD=mypassword \
+    DB_HOST=10.184.49.241 \
+    APACHE_ROOT=/var/www/html/wordpress
 
 # Set timezone and install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt update && \
+    apt install -y \
     nano \
-    rsync \
+    tzdata \
+    apache2 \
     software-properties-common \
     mariadb-client \
     git \
     sudo \
     curl \
-    lsb-release \
-    unzip && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP 8.2 extensions using the built-in Docker PHP tool
-RUN docker-php-ext-install mysqli pdo pdo_mysql opcache
-
-# Install additional PHP modules using PECL
-RUN pecl install redis && docker-php-ext-enable redis
+    php \
+    php-cli \
+    php-common \
+    php-mysql \
+    php-redis \
+    php-snmp \
+    php-xml \
+    php-zip \
+    php-mbstring \
+    php-curl \
+    libapache2-mod-php \
+    lsb-release && \
+    apt clean && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
@@ -74,8 +81,5 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Expose port 80
 EXPOSE 80
 
-
-CMD service mariadb start && apachectl -D FOREGROUND
-
 # Start Apache in the foreground
-#CMD ["apache2ctl", "-D", "FOREGROUND"]
+CMD ["apache2ctl", "-D", "FOREGROUND"]
