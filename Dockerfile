@@ -9,29 +9,29 @@ ENV DB_HOST=10.184.49.241
 ENV APACHE_ROOT=/var/www/html/wordpress/
 
 # Set timezone and install dependencies
-RUN apt update && \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install -y \
     nano \
-    tzdata \
-    apache2 \
+    rsync \
     software-properties-common \
+    mariadb-server \
     mariadb-client \
     git \
     sudo \
     curl \
-    php \
-    php-cli \
-    php-common \
-    php-mysql \
-    php-redis \
-    php-snmp \
-    php-xml \
-    php-zip \
-    php-mbstring \
-    php-curl \
+    php8.2 \
+    php8.2-cli \
+    php8.2-common \
+    php8.2-mysql \
+    php8.2-redis \
+    php8.2-snmp \
+    php8.2-xml \
+    php8.2-zip \
+    php8.2-mbstring \
+    php8.2-curl \
     libapache2-mod-php \
     lsb-release && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache rewrite module
 RUN a2enmod rewrite
