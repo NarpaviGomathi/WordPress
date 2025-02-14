@@ -76,7 +76,7 @@ RUN a2ensite wordpress.com.conf && \
     a2enmod rewrite
 
 # Remove cache and old build data
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+#RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Expose port 80
 EXPOSE 80
