@@ -34,6 +34,12 @@ RUN apt update && \
     lsb-release && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
+
+RUN apt-get update && apt-get install -y curl && \
+    curl -sSL https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh -o /usr/local/bin/wait-for-it && \
+    chmod +x /usr/local/bin/wait-for-it
+
+    
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
