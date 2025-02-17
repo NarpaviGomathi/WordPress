@@ -72,10 +72,16 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 # Delete the existing database and create a new one
-RUN echo "DROP DATABASE IF EXISTS ${DB_NAME}; CREATE DATABASE ${DB_NAME};" | mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
-RUN mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};" && \
-    mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "USE ${DB_NAME};" && \
-    mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "DROP DATABASE IF EXISTS ${DB_NAME};"
+# Delete the existing database, create a new one, and set up user privileges
+RUN echo "DROP DATABASE IF EXISTS ${DB_NAME}; \
+          CREATE DATABASE ${DB_NAME}; \
+          CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+          GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+          FLUSH PRIVILEGES;" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
+
+# Show tables in the database (for debugging purposes)
+RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
+
 
 # Enable Apache site and modules
 RUN a2enmod rewrite \
