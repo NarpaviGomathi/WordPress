@@ -71,13 +71,17 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
-# Delete the existing database and create a new one
 # Delete the existing database, create a new one, and set up user privileges
-RUN echo "DROP DATABASE IF EXISTS ${DB_NAME}; \
+
+RUN echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+          GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
+          FLUSH PRIVILEGES; \
+          DROP DATABASE IF EXISTS ${DB_NAME}; \
           CREATE DATABASE ${DB_NAME}; \
           CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
-          FLUSH PRIVILEGES;" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
+          FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
+
 
 # Show tables in the database (for debugging purposes)
 RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
