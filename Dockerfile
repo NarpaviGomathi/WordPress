@@ -72,7 +72,8 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 # Delete the existing database, create a new one, and set up user privileges
-RUN echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+RUN sleep 20 && \
+    echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
           FLUSH PRIVILEGES; \
           DROP DATABASE IF EXISTS ${DB_NAME}; \
