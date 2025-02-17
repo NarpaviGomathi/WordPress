@@ -52,6 +52,7 @@ RUN rm -rf ${APACHE_ROOT} && \
     find ${APACHE_ROOT} -type f -exec chmod 644 {} \;
 RUN chmod -R 755  ${APACHE_ROOT}
 RUN chown -R www-data:www-data ${APACHE_ROOT} 
+CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 # Configure WordPress wp-config.php
 RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
@@ -61,6 +62,7 @@ RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/localhost/${DB_HOST}/" ${APACHE_ROOT}/wp-config.php && \
     echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php
+CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
@@ -75,6 +77,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
+CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 # Delete the existing database, create a new one, and set up user privileges
 # Use the wait-for-it tool to wait for MySQL to be ready
@@ -92,6 +95,7 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
            CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
            GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
            FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
+CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 # Show tables in the database (for debugging purposes)
 RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
