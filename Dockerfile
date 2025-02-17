@@ -66,7 +66,6 @@ RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerName 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    ServerAlias 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
@@ -78,8 +77,11 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 # Delete the existing database, create a new one, and set up user privileges
+# Use the wait-for-it tool to wait for MySQL to be ready
 RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
+    # Grant remote access to root and set privileges
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
+    # Other database setup commands
     echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
           FLUSH PRIVILEGES; \
@@ -88,6 +90,7 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
           CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
           FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
+
 
 # Show tables in the database (for debugging purposes)
 RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
