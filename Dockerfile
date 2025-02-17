@@ -72,7 +72,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 # Delete the existing database, create a new one, and set up user privileges
-RUN sleep 20 && \
+RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
     echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
           FLUSH PRIVILEGES; \
@@ -81,8 +81,6 @@ RUN sleep 20 && \
           CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
           FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
-
-
 
 # Show tables in the database (for debugging purposes)
 RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
