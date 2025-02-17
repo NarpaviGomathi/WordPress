@@ -74,7 +74,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 # Delete the existing database, create a new one, and set up user privileges
 
 RUN echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-          GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
+          GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'mypassword' WITH GRANT OPTION; \
           FLUSH PRIVILEGES; \
           DROP DATABASE IF EXISTS ${DB_NAME}; \
           CREATE DATABASE ${DB_NAME}; \
