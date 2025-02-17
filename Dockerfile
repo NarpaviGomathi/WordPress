@@ -78,19 +78,20 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 
 # Delete the existing database, create a new one, and set up user privileges
 # Use the wait-for-it tool to wait for MySQL to be ready
-RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
-    # Grant remote access to root and set privileges
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
-    # Other database setup commands
-    echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-          GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
-          FLUSH PRIVILEGES; \
-          DROP DATABASE IF EXISTS ${DB_NAME}; \
-          CREATE DATABASE ${DB_NAME}; \
-          CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-          GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
-          FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
 
+RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
+    echo "DB_HOST: ${DB_HOST}" && \
+    echo "DB_USER: ${DB_USER}" && \
+    echo "DB_PASSWORD: ${DB_PASSWORD}" && \
+    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
+    echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+           GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
+           FLUSH PRIVILEGES; \
+           DROP DATABASE IF EXISTS ${DB_NAME}; \
+           CREATE DATABASE ${DB_NAME}; \
+           CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+           GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+           FLUSH PRIVILEGES;" | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD}
 
 # Show tables in the database (for debugging purposes)
 RUN echo "SHOW TABLES FROM ${DB_NAME};" | mysql -h ${DB_HOST} -u root -p${DB_PASSWORD}
