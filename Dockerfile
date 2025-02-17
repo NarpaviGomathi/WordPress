@@ -79,6 +79,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 
 # Delete the existing database, create a new one, and set up user privileges
 RUN wait-for-it ${DB_HOST}:3306 --timeout=30 --strict -- \
+    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
     echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
           GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
           FLUSH PRIVILEGES; \
