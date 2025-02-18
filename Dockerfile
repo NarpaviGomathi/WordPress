@@ -64,6 +64,35 @@ RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
+# Configure Apache and WordPress
+RUN set -eux; \
+    if [ -d "${APACHE_ROOT}" ]; then \
+        echo "🔄 Removing existing WordPress directory..."; \
+        rm -rf ${APACHE_ROOT}; \
+    fi && \
+    mkdir -p ${APACHE_ROOT} && \
+    rsync -av --exclude='.git' ./ ${APACHE_ROOT}/ && \
+    cd ${APACHE_ROOT} && \
+    chown -R www-data:www-data ${APACHE_ROOT} && \
+    find . -type d -exec chmod 755 {} \; && \
+    find . -type f -exec chmod 644 {} \; && \
+    a2enmod rewrite && \
+    service apache2 restart || { echo "❌ Apache restart failed!"; exit 1; } && \
+    mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/database_name_here/${DB_NAME}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/username_here/${DB_USER}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/password_here/${DB_PASSWORD}/" ${APACHE_ROOT}/wp-config.php && \
+    if ! grep -q "define( 'FS_METHOD', 'direct' );" ${APACHE_ROOT}/wp-config.php; then \
+        echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php; \
+    fi && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
+    systemctl restart apache2 && \
+    sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php && \
+    chown -R www-data:www-data ${APACHE_ROOT} && \
+    chmod -R 775 ${APACHE_ROOT}
+
+
+
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
