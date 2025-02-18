@@ -1,4 +1,4 @@
- # Use Debian 11 as the base image
+# Use Debian 11 as the base image
 FROM debian:11
 
 # Set environment variables
@@ -44,18 +44,17 @@ RUN apt-get update && apt-get install -y curl && \
 RUN a2enmod rewrite
 
 # Clone WordPress repository
-RUN if [ ! -d "${APACHE_ROOT}/.git" ]; then
-    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}
-    else
-    cd ${APACHE_ROOT} && git pull origin main
-    fi
-
+RUN if [ ! -d "${APACHE_ROOT}/.git" ]; then \
+    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}; \
+    else \
+    cd ${APACHE_ROOT} && git pull origin main; \
+    fi && \
     # Ensure WordPress directory ownership
-    chown -R www-data:www-data ${APACHE_ROOT}
-    chmod -R 755 ${APACHE_ROOT}
+    chown -R www-data:www-data ${APACHE_ROOT} && \
+    chmod -R 755 ${APACHE_ROOT} && \
     apt-get update && apt-get install -y git ca-certificates && \
-    rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT} && \
-    
+    rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT}
+
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 
@@ -119,11 +118,8 @@ RUN a2enmod rewrite \
     && apachectl -t \
     && apache2ctl configtest 
     
-# Remove cache and old build data
-#RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Expose port 80
 EXPOSE 80
 
 # Start Apache in the foreground
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+CMD ["apache2ctl", "-D", "FOREGROUND"]  
