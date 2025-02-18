@@ -54,14 +54,18 @@ RUN chmod -R 755  ${APACHE_ROOT}
 RUN chown -R www-data:www-data ${APACHE_ROOT} 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
-# Configure WordPress wp-config.php
-RUN mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s/database_name_here/${DB_NAME}/" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s/username_here/${DB_USER}/" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s/password_here/${DB_PASSWORD}/" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s/localhost/${DB_HOST}/" ${APACHE_ROOT}/wp-config.php && \
-    echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php
+RUN if [ -f "${APACHE_ROOT}/wp-config-sample.php" ]; then \
+        mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php; \
+    fi && \
+    sed -i "s/database_name_here/${DB_NAME}/g" ${APACHE_ROOT}/wp-config.php || true && \
+    sed -i "s/username_here/${DB_USER}/g" ${APACHE_ROOT}/wp-config.php || true && \
+    sed -i "s/password_here/${DB_PASSWORD}/g" ${APACHE_ROOT}/wp-config.php || true && \
+    sed -i "s/localhost/${DB_HOST}/g" ${APACHE_ROOT}/wp-config.php || true && \
+    if ! grep -q "define( 'FS_METHOD', 'direct' );" ${APACHE_ROOT}/wp-config.php; then \
+        echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php; \
+    fi && \
+    sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php || true
+
 RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
     && apachectl -t \
