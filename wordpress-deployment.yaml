@@ -14,6 +14,20 @@ spec:
   type: LoadBalancer
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
+    path: /mnt/data  # This path should be available on your nodes
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wp-pv-claim
