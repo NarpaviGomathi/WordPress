@@ -7,6 +7,7 @@ metadata:
 spec:
   ports:
     - port: 80
+      targetPort: 80  # Specify the targetPort to match the container port
   selector:
     app: wordpress
     tier: frontend
@@ -23,7 +24,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,23 +46,23 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: gomathi747/wordpress-docker:latest
-        name: wordpress
-        env:
-          - name: DB_NAME
-            value: "wordpress_db"
-          - name: DB_USER
-            value: "wordpress_user"
-          - name: DB_PASSWORD
-            value: "mypassword"
-          - name: DB_HOST
-            value: "10.184.49.241"
-        ports:
-          - containerPort: 80
-            name: wordpress
-        volumeMounts:
-          - name: wordpress-persistent-storage
-            mountPath: /var/www/html
+        - image: gomathi747/wordpress-docker:latest  # Ensure this image exists
+          name: wordpress
+          env:
+            - name: DB_NAME
+              value: "wordpress_db"
+            - name: DB_USER
+              value: "wordpress_user"
+            - name: DB_PASSWORD
+              value: "mypassword"
+            - name: DB_HOST
+              value: "10.184.49.241"
+          ports:
+            - containerPort: 80
+              name: wordpress
+          volumeMounts:
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html
       volumes:
         - name: wordpress-persistent-storage
           persistentVolumeClaim:
