@@ -45,3 +45,54 @@ spec:
       port: 80
       targetPort: 80
   type: LoadBalancer  # Change to NodePort if needed
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: gomathi747/wordpress-docker:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_NAME
+              value: "wordpress_db"
+            - name: DB_USER
+              value: "wordpress_user"
+            - name: DB_PASSWORD
+              value: "mypassword"
+            - name: DB_HOST
+              value: "10.184.49.241"
+          volumeMounts:
+            - name: wordpress-data
+              mountPath: /var/www/html/wordpress
+      volumes:
+        - name: wordpress-data
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
+
