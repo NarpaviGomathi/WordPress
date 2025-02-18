@@ -47,13 +47,13 @@ RUN a2enmod rewrite
 RUN apt-get update && apt-get install -y git ca-certificates && \
     rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT} && \
     git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} || \
-    (echo "🔄 Retrying shallow clone..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
+    (echo "🔄 Retrying shallow clone..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) || \
+    (echo "❌ Git clone failed, exiting..." && exit 1) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
-    find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
-    find ${APACHE_ROOT} -type f -exec chmod 644 {} \;
-RUN chmod -R 755  ${APACHE_ROOT}
-RUN chown -R www-data:www-data ${APACHE_ROOT} 
+    chmod -R 755 ${APACHE_ROOT}
+
 CMD ["apache2ctl", "-D", "FOREGROUND"]
+
 
 RUN if [ -f "${APACHE_ROOT}/wp-config-sample.php" ]; then \
         mv ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php; \
