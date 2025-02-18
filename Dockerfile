@@ -65,6 +65,7 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '        AllowOverride All' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '        Require all granted' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    </Directory>' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
