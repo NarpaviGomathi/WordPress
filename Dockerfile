@@ -67,9 +67,7 @@ RUN if [ -f "${APACHE_ROOT}/wp-config-sample.php" ]; then \
     fi && \
     sed -i "s/^\$table_prefix = .*/\$table_prefix = 'wp_';/" ${APACHE_ROOT}/wp-config.php || true
 
-RUN a2enmod rewrite \
-    && a2ensite wordpress.com.conf \
-    && apachectl -t \
+RUN apachectl -t \
     && apache2ctl configtest 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
