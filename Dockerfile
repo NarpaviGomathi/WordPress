@@ -32,7 +32,6 @@ RUN apt update && \
     php-curl \
     libapache2-mod-php \
     lsb-release && \
-    apt-get update && apt-get install -y git ca-certificates \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 
@@ -45,9 +44,10 @@ RUN apt-get update && apt-get install -y curl && \
 RUN a2enmod rewrite
 
 # Clone WordPress repository
-RUN rm -rf ${APACHE_ROOT} && \
-    mkdir -p ${APACHE_ROOT} && \
-    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} && \
+RUN apt-get update && apt-get install -y git ca-certificates && \
+    rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT} && \
+    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} || \
+    (echo "🔄 Retrying shallow clone..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
     find ${APACHE_ROOT} -type f -exec chmod 644 {} \;
