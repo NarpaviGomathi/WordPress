@@ -30,24 +30,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress
+  namespace: wordpress
   labels:
     app: wordpress
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: wordpress
-      tier: frontend
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
         app: wordpress
-        tier: frontend
     spec:
       containers:
-        - image: gomathi747/wordpress-docker:latest  # Ensure this image exists
-          name: wordpress
+        - name: wordpress
+          image: gomathi747/wordpress-docker:latest
+          imagePullPolicy: Always  # Ensures the latest image is used
+          ports:
+            - containerPort: 80
           env:
             - name: DB_NAME
               value: "wordpress_db"
