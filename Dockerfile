@@ -32,6 +32,7 @@ RUN apt update && \
     php-curl \
     libapache2-mod-php \
     lsb-release && \
+    apt-get update && apt-get install -y git ca-certificates \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 
