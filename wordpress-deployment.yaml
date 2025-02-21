@@ -2,12 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wordpress
+  namespace: wordpress  # Ensure all resources are in the same namespace
   labels:
     app: wordpress
 spec:
   ports:
     - port: 80
-      targetPort: 80  # Specify the targetPort to match the container port
+      targetPort: 80
   selector:
     app: wordpress
     tier: frontend
@@ -25,12 +26,13 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
   hostPath:
-    path: /mnt/data  # This path should be available on your nodes
+    path: /mnt/data  # Ensure this path is available on your nodes
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wp-pv-claim
+  namespace: wordpress  # Added namespace to match Deployment
   labels:
     app: wordpress
 spec:
@@ -39,6 +41,19 @@ spec:
   resources:
     requests:
       storage: 1Gi
+  storageClassName: standard  # Ensure it matches PV
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wordpress-db-secret
+  namespace: wordpress
+type: Opaque
+data:
+  DB_NAME: d29yZHByZXNzX2Ri   # base64 encoded 'wordpress_db'
+  DB_USER: d29yZHByZXNzX3VzZXI=  # base64 encoded 'wordpress_user'
+  DB_PASSWORD: bXlwYXNzd29yZA==  # base64 encoded 'mypassword'
+  DB_HOST: MTAuMTg0LjQ5LjI0MQ==  # base64 encoded '10.184.49.241'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -60,21 +75,30 @@ spec:
       containers:
         - name: wordpress
           image: gomathi747/wordpress-docker:latest
-          imagePullPolicy: Always  # Ensures the latest image is used
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: DB_NAME
-              value: "wordpress_db"
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: DB_NAME
             - name: DB_USER
-              value: "wordpress_user"
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: DB_USER
             - name: DB_PASSWORD
-              value: "mypassword"
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: DB_PASSWORD
             - name: DB_HOST
-              value: "10.184.49.241"
-          ports:
-            - containerPort: 80
-              name: wordpress
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: DB_HOST
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
