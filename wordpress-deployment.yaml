@@ -24,7 +24,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: standard
+  storageClassName: manual
   hostPath:
     path: /mnt/data  # Ensure this path is available on your nodes
 ---
@@ -41,7 +41,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: standard  # Ensure it matches PV
+  storageClassName: manual  # Ensure it matches PV
 ---
 apiVersion: v1
 kind: Secret
