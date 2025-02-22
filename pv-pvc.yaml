@@ -9,8 +9,16 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local
-  hostPath:
-    path: "/mnt/data/wordpress"
+  local:
+    path: "/mnt/data/wordpress"  # Directory must exist on the node
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - knode # Replace with your node's name
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -35,8 +43,16 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local
-  hostPath:
-    path: "/mnt/data/mysql"
+  local:
+    path: "/mnt/data/mysql"  # Directory must exist on the node
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - knode  # Replace with your node's name
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
