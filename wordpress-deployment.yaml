@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: wordpress
-        image: your-dockerhub-repo/wordpress-docker:latest
+        image: gomathi747/wordpress-docker:latest
         ports:
         - containerPort: 80
         env:
