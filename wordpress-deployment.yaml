@@ -1,22 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: wordpress
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress
+  labels:
+    app: wordpress
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: wordpress
+        tier: frontend
     spec:
       containers:
-      - name: wordpress
-        image: gomathi747/wordpress-docker:latest
-        ports:
-        - containerPort: 80
+      - image: gomathi747/wordpress-docker:latest
+        name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
           value: "10.184.49.241"   # MariaDB IP
@@ -26,23 +56,13 @@ spec:
           value: "yourpassword"
         - name: WORDPRESS_DB_NAME
           value: "wordpress"
+        ports:
+        - containerPort: 80
+          name: wordpress
         volumeMounts:
-        - name: wordpress-storage
+        - name: wordpress-persistent-storage
           mountPath: /var/www/html
       volumes:
-      - name: wordpress-storage
+      - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: wp-pvc
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wordpress-service
-spec:
-  selector:
-    app: wordpress
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: NodePort
+          claimName: wp-pv-claim
