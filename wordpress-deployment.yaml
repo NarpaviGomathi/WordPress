@@ -13,17 +13,30 @@ spec:
   type: LoadBalancer
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: "/mnt/data" 
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wp-pv-claim
-  labels:
-    app: wordpress
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
+  storageClassName: manual
 ---
 apiVersion: apps/v1
 kind: Deployment
