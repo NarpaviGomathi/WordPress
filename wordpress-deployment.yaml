@@ -5,12 +5,13 @@ metadata:
   labels:
     app: wordpress
 spec:
+  type: LoadBalancer
   ports:
     - port: 80
+      targetPort: 80
   selector:
     app: wordpress
     tier: frontend
-  type: LoadBalancer
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -24,7 +25,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: manual
   hostPath:
-    path: "/mnt/data" 
+    path: "/mnt/data"  # Make sure this path exists on the node
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -57,9 +58,10 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      restartPolicy: Always
       containers:
-      - image: gomathi747/wordpress-docker:latest
-        name: wordpress
+      - name: wordpress
+        image: gomathi747/wordpress-docker:latest
         env:
         - name: DB_HOST
           value: "10.184.49.241"   # MariaDB IP
