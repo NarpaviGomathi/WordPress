@@ -45,7 +45,8 @@ RUN apt-get update && apt-get install -y curl && \
 RUN a2enmod rewrite
 
 # Clone WordPress repository
-RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} && \
+RUN git config --global http.postBuffer 524288000 && \
+    git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
