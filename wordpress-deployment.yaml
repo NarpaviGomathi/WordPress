@@ -61,7 +61,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: wordpress
-        image: gomathi747/wordpress-docker:latest
+        image: gomathi747/wordpress:latest
         env:
         - name: DB_HOST
           value: "10.184.49.241"   # MariaDB IP
