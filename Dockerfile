@@ -45,10 +45,11 @@ RUN apt-get update && apt-get install -y curl && \
 RUN a2enmod rewrite
 
 # Clone WordPress repository
-RUN git clone --single-branch --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} && \
-    chown -R www-data:www-data ${APACHE_ROOT} && \
-    chmod -R 755 ${APACHE_ROOT}
-
+RUN if [ ! -f "/var/www/html/wordpress/index.php" ]; then \
+    git clone --single-branch --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress && \
+    chown -R www-data:www-data /var/www/html/wordpress && \
+    chmod -R 755 /var/www/html/wordpress; \
+    fi
 RUN cp ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/database_name_here/${DB_NAME}/g" ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/username_here/${DB_USER}/g" ${APACHE_ROOT}/wp-config.php && \
