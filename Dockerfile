@@ -36,6 +36,9 @@ RUN apt update && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT}
+RUN apt-get update && apt-get install -y rsync
+RUN rsync -av --exclude='.git' /usr/src/wordpress/ ${APACHE_ROOT}
+
 
 RUN apt-get update && apt-get install -y curl && \
     curl -sSL https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh -o /usr/local/bin/wait-for-it && \
