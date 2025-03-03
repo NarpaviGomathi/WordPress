@@ -51,6 +51,13 @@ spec:
         volumeMounts:
         - name: wordpress-storage
           mountPath: "/var/www/html"
+        command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ ! -f /var/www/html/index.php ]; then
+                cp -r /usr/src/wordpress/* /var/www/html/
+              fi
+              exec apache2-foreground
       volumes:
       - name: wordpress-storage
         persistentVolumeClaim:
