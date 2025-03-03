@@ -49,10 +49,9 @@ spec:
         - containerPort: 80
           name: wordpress
         volumeMounts:
-        - name: wordpress-persistent-storage
-          mountPath: /var/www/html
-          subPath: wordpress
+        - name: wordpress-storage
+          mountPath: "/var/www/html"
       volumes:
-      - name: wordpress-persistent-storage
+      - name: wordpress-storage
         persistentVolumeClaim:
           claimName: wp-pv-claim
