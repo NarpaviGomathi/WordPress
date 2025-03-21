@@ -13,6 +13,18 @@ spec:
     app: wordpress
     tier: frontend
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cephfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: rook-cephfs
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
