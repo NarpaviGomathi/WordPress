@@ -43,6 +43,7 @@ spec:
       labels:
         app: wordpress
         tier: frontend
+    spec:  
       containers:
       - name: wordpress
         image: gomathi747/wordpress:latest
@@ -61,7 +62,7 @@ spec:
         volumeMounts:
         - name: wordpress-persistent-storage
           mountPath: /var/www/html
-      volumes:
+      volumes:  
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
           claimName: cephfs-pvc
