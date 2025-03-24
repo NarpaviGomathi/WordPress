@@ -62,7 +62,7 @@ spec:
         image: gomathi747/wordpress:latest
         env:
         - name: DB_HOST
-          value: "mariadb"   # MariaDB IP
+          value: "10.184.49.241"   # MariaDB IP
         - name: DB_USER
           value: "wordpress_user"
         - name: DB_PASSWORD
