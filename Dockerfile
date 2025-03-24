@@ -74,7 +74,6 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!"
-    
     echo "DB_HOST: ${DB_HOST}" && \
     echo "DB_USER: ${DB_USER}" && \
     echo "DB_PASSWORD: ${DB_PASSWORD}" && \
