@@ -30,12 +30,8 @@ kind: Service
 metadata:
   name: mariadb
 spec:
-  type: ClusterIP
-  ports:
-    - port: 3306
-      targetPort: 3306
-  externalIPs:
-    - 10.184.49.241
+  type: ExternalName
+  externalName: 10.184.49.241
 ---
 apiVersion: apps/v1
 kind: Deployment
