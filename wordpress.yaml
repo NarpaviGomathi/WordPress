@@ -25,14 +25,6 @@ spec:
       storage: 3Gi
   storageClassName: rook-cephfs
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: mariadb
-spec:
-  type: ExternalName
-  externalName: 10.184.49.241
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,18 +43,12 @@ spec:
       labels:
         app: wordpress
         tier: frontend
-    spec:
-      restartPolicy: Always
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        searches:
-          - default.svc.cluster.local
       containers:
       - name: wordpress
         image: gomathi747/wordpress:latest
         env:
         - name: DB_HOST
-          value: "mariadb.default.svc.cluster.local"   # MariaDB IP
+          value: "10.184.49.241"   # MariaDB IP
         - name: DB_USER
           value: "wordpress_user"
         - name: DB_PASSWORD
