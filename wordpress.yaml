@@ -30,11 +30,12 @@ kind: Service
 metadata:
   name: mariadb
 spec:
-  type: ExternalName
-  externalName: 10.184.49.241  # Worker node where MariaDB is running
+  clusterIP: None
   ports:
     - port: 3306
       targetPort: 3306
+  externalIPs:
+    - 10.184.49.241
 ---
 apiVersion: apps/v1
 kind: Deployment
