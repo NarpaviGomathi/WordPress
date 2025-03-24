@@ -53,12 +53,16 @@ spec:
         tier: frontend
     spec:
       restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        searches:
+          - default.svc.cluster.local
       containers:
       - name: wordpress
         image: gomathi747/wordpress:latest
         env:
         - name: DB_HOST
-          value: "10.184.49.241"   # MariaDB IP
+          value: "mariadb.default.svc.cluster.local"   # MariaDB IP
         - name: DB_USER
           value: "wordpress_user"
         - name: DB_PASSWORD
