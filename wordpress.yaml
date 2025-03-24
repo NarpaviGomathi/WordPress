@@ -30,7 +30,7 @@ kind: Service
 metadata:
   name: mariadb
 spec:
-  clusterIP: None
+  type: ClusterIP
   ports:
     - port: 3306
       targetPort: 3306
