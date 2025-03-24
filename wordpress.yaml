@@ -25,6 +25,17 @@ spec:
       storage: 3Gi
   storageClassName: rook-cephfs
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service
+spec:
+  type: ExternalName
+  externalName: 10.184.49.241  # Worker node where MariaDB is running
+  ports:
+    - port: 3306
+      targetPort: 3306
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
