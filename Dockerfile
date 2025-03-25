@@ -94,13 +94,13 @@ RUN  echo "SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'";" | mysql --protocol=TCP
 # FLUSH PRIVILEGES; \
 # mysql --protocol=TCP -h "${DB_HOST}" -u "root" -p"${DB_PASSWORD}"
 
-# Enable Apache site and modules
+  # Enable Apache site and modules
 RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
     && apachectl -t \
     && apache2ctl configtest 
 
-# Expose port 80
+  # Expose port 80
 EXPOSE 80
 
 CMD ["apache2ctl -D FOREGROUND "]
