@@ -101,7 +101,7 @@ EXPOSE 80
 
 # Start Apache in the foreground
 #CMD ["apache2ctl", "-D", "FOREGROUND"]  
-CMD ["sh", "-c", "
+CMD sh -c "
     /usr/local/bin/wait-for-it '${DB_HOST}:3306' --timeout=60 --strict && echo '✅ Database is available!' && \
     
     echo 'Initializing MySQL database...' && \
@@ -112,4 +112,4 @@ CMD ["sh", "-c", "
     echo 'Checking WordPress tables...' && \
     echo 'SHOW TABLES FROM ${DB_NAME};' | mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} && \
     apache2ctl -D FOREGROUND
-"]
+"
