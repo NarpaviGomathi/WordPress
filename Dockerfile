@@ -102,7 +102,7 @@ EXPOSE 80
 # Start Apache in the foreground
 #CMD ["apache2ctl", "-D", "FOREGROUND"]  
 CMD ["sh", "-c", "
-    wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo '✅ Database is available!' && \
+    ${DB_HOST}:3306 --timeout=60 --strict && echo '✅ Database is available!' && \
     
     echo 'Initializing MySQL database...' && \
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${DB_NAME};\" && \
