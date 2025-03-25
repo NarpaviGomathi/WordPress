@@ -118,5 +118,9 @@ CMD /bin/sh -c ' wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ 
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "CREATE DATABASE ${DB_NAME};" && \
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'wordpress_user'@'%'; FLUSH PRIVILEGES;" && \
     mysql --protocol=TCP -h ${DB_HOST} -u "${DB_USER}" -p"${DB_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\''; FLUSH PRIVILEGES;" && \
-    echo "SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'';" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" ' 
+    echo "SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'';" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" 
+    exec apache2ctl -D FOREGROUND; 
+    '
+    
+    
    
