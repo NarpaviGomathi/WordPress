@@ -85,22 +85,22 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is a
     GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
     FLUSH PRIVILEGES;" 
    
-    # Show tables in the database (for debugging purposes)
-RUN  echo "SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'";" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD};" && \
-     echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD};"
+# Show grants and tables in the database (for debugging purposes)
+RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" && \
+    echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}"
 
-
-   # Enable Apache site and modules
-
+# Enable Apache site and modules
 RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
     && apachectl -t \
-    && apache2ctl configtest 
+    && apache2ctl configtest
 
-  # Expose port 80
+# Expose port 80
 EXPOSE 80
 
-CMD ["apache2ctl -D FOREGROUND "]
+# Start Apache in the foreground
+CMD ["apache2ctl", "-D", "FOREGROUND"]
+
 
 #echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
 # GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; \
