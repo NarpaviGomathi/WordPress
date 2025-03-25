@@ -67,6 +67,30 @@ RUN set -e && \
     chown www-data:www-data ${APACHE_ROOT}/wp-config.php && chmod 644 ${APACHE_ROOT}/wp-config.php && \
     echo "✅ wp-config.php successfully configured!"
 
+
+# Configure Apache Virtual Host
+# RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
+   # cat <<EOF > /etc/apache2/sites-available/wordpress.com.conf
+#<VirtualHost *:80>
+    #ServerName 10.184.49.241
+    #ServerAdmin webmaster@localhost
+   # DocumentRoot /var/www/html/wordpress
+
+    #<Directory "/var/www/html/wordpress">
+      #  AllowOverride All
+        #Require all granted
+   # </Directory>
+
+    #ErrorLog \${APACHE_LOG_DIR}/wordpress.com-error.log
+    #CustomLog \${APACHE_LOG_DIR}/wordpress.com-access.log combined
+#</VirtualHost>
+#EOF
+
+# Enable the site and restart Apache
+RUN a2ensite wordpress.com.conf && \
+    apachectl configtest && \
+    service apache2 reload
+
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
