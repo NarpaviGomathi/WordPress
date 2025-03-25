@@ -100,17 +100,18 @@ RUN a2enmod rewrite \
 EXPOSE 80
 
 # Start Apache in the foreground with MySQL initialization
-CMD ["sh", "-c", "
-    set -e
-    /usr/local/bin/wait-for-it '${DB_HOST}:3306' --timeout=60 --strict && echo '✅ Database is available!'
-    
-    echo 'Initializing MySQL database...'
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${DB_NAME};\"
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \"CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';\"
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e \"GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; FLUSH PRIVILEGES;\"
+CMD sh -c '
+    set -e;
+    /usr/local/bin/wait-for-it "${DB_HOST}:3306" --timeout=60 --strict && echo "✅ Database is available!";
 
-    echo 'Checking WordPress tables...'
-    echo  echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h "${DB_HOST}" -u "root" -p"${DB_PASSWORD}"
+    echo "Initializing MySQL database...";
+    mysql --protocol=TCP -h "${DB_HOST}" -u root -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};";
+    mysql --protocol=TCP -h "${DB_HOST}" -u root -p"${DB_PASSWORD}" -e "CREATE USER IF NOT EXISTS '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';";
+    mysql --protocol=TCP -h "${DB_HOST}" -u root -p"${DB_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\''; FLUSH PRIVILEGES;";
 
-    exec apache2ctl -D FOREGROUND
-"]
+    echo "Checking WordPress tables...";
+    echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h "${DB_HOST}" -u root -p"${DB_PASSWORD}";
+
+    exec apache2ctl -D FOREGROUND;
+'
+
