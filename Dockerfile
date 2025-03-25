@@ -100,8 +100,8 @@ RUN a2enmod rewrite \
 # Expose port 80
 EXPOSE 80
 
-# Start Apache in the foreground
 CMD ["apache2ctl", "-D", "FOREGROUND"]
+
 
 
 #echo "ALTER USER 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
