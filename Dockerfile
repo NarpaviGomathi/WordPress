@@ -73,17 +73,17 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
     echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
-#RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
-    #echo "DB_HOST: ${DB_HOST}" && \
-    #echo "DB_USER: ${DB_USER}" && \
-    #echo "DB_PASSWORD: ${DB_PASSWORD}" && \
-   # mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
-   # DROP DATABASE IF EXISTS ${DB_NAME}; \
-   # DROP USER IF EXISTS ${DB_USER}; \
-    # CREATE DATABASE ${DB_NAME}; \
-    # CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-    # GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
-    # FLUSH PRIVILEGES;" 
+RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
+    echo "DB_HOST: ${DB_HOST}" && \
+    echo "DB_USER: ${DB_USER}" && \
+    echo "DB_PASSWORD: ${DB_PASSWORD}" && \
+    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; FLUSH PRIVILEGES;" && \
+    DROP DATABASE IF EXISTS ${DB_NAME}; \
+    DROP USER IF EXISTS ${DB_USER}; \
+    CREATE DATABASE ${DB_NAME}; \
+    CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+    GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+    FLUSH PRIVILEGES;" 
    
 # Show tables in the database (for debugging purposes)
 RUN  echo "SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'";" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD};" && \
@@ -99,7 +99,8 @@ RUN a2enmod rewrite \
     && a2ensite wordpress.com.conf \
     && apachectl -t \
     && apache2ctl configtest 
-    # Expose port 80
+
+# Expose port 80
 EXPOSE 80
 
 CMD ["apache2ctl -D FOREGROUND "]
