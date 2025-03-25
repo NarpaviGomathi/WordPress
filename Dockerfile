@@ -108,7 +108,7 @@ EXPOSE 80
     # mysql --protocol=TCP -h ${DB_HOST} -u "${DB_USER}" -p"${DB_PASSWORD}" -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; FLUSH PRIVILEGES;" && \
    # echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}"
 
-CMD /bin/sh -c "/usr/local/bin/wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo '✅ Database is available!' && \
+CMD /bin/sh -c '/usr/local/bin/wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo '✅ Database is available!' && \
     echo 'DB_HOST: ${DB_HOST}' && \
     echo 'DB_USER: ${DB_USER}' && \
     echo 'DB_PASSWORD: ${DB_PASSWORD}' && \
@@ -119,6 +119,5 @@ CMD /bin/sh -c "/usr/local/bin/wait-for-it ${DB_HOST}:3306 --timeout=60 --strict
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e 'GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''wordpress_user'\''@'\''%'\''; FLUSH PRIVILEGES;' && \
     mysql --protocol=TCP -h ${DB_HOST} -u \"${DB_USER}\" -p\"${DB_PASSWORD}\" -e 'GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\''; FLUSH PRIVILEGES;' && \
     echo 'SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\'';' | mysql --protocol=TCP -h \"${DB_HOST}\" -u \"${DB_USER}\" -p\"${DB_PASSWORD}\"; \
-    exec apache2ctl -D FOREGROUND
-"
+    exec apache2ctl -D FOREGROUND '
 
