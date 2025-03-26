@@ -69,6 +69,19 @@ RUN set -e && \
 
 
 # Configure Apache Virtual Host
+RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
+    echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    ServerName 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '        AllowOverride All' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '        Require all granted' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    </Directory>' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
+
+# Configure Apache Virtual Host
 # RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
    # cat <<EOF > /etc/apache2/sites-available/wordpress.com.conf
 #<VirtualHost *:80>
@@ -91,18 +104,6 @@ RUN a2ensite wordpress.com.conf && \
     apachectl configtest && \
     service apache2 reload
 
-# Configure Apache Virtual Host
-RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
-    echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    ServerName 10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '        AllowOverride All' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '        Require all granted' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    </Directory>' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
 
 RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
     echo "DB_HOST: ${DB_HOST}" && \
