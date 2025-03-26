@@ -86,8 +86,10 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
 # Enable the site and restart Apache
 RUN a2ensite wordpress.com.conf && \
     a2enmod rewrite && \
-    apachectl configtest && \
-    service apache2 reload
+    apachectl configtest 
+
+CMD ["apache2ctl", "-D", "FOREGROUND"]
+
 
 
 RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
