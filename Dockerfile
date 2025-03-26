@@ -118,6 +118,7 @@ EOF
 
 # Enable the site and restart Apache
 RUN a2ensite wordpress.com.conf && \
+    a2enmod rewrite && \
     apachectl configtest && \
     service apache2 reload
 
