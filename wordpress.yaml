@@ -13,18 +13,6 @@ spec:
     app: wordpress
     tier: frontend
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: cephfs-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 3Gi
-  storageClassName: rook-cephfs
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -59,10 +47,3 @@ spec:
         ports:
         - containerPort: 80
           name: wordpress
-        volumeMounts:
-        - name: wordpress-persistent-storage
-          mountPath: /var/www/html
-      volumes:  
-      - name: wordpress-persistent-storage
-        persistentVolumeClaim:
-          claimName: cephfs-pvc
