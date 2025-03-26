@@ -117,6 +117,7 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is a
         CREATE DATABASE ${DB_NAME}; \
         CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
         GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+        GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'localhost'; \
         FLUSH PRIVILEGES;"
    
 # Show grants and tables in the database (for debugging purposes)
