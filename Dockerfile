@@ -80,12 +80,13 @@ RUN set -e && \
     #echo '    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log' >> /etc/apache2/sites-available/wordpress.com.conf && \
     #echo '    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined' >> /etc/apache2/sites-available/wordpress.com.conf && \
     #echo '</VirtualHost>' >> /etc/apache2/sites-available/wordpress.com.conf
-
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
-    cat <<EOF > /etc/apache2/sites-available/wordpress.com.conf
+    bash -c 'cat > /etc/apache2/sites-available/wordpress.com.conf <<EOF
 <VirtualHost *:80>
     ServerName wordpress.com
+    ServerAlias www.wordpress.com
+    ServerAdmin webmaster@localhost
     DocumentRoot /var/www/html/wordpress
 
     <Directory "/var/www/html/wordpress">
@@ -93,28 +94,10 @@ RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
         Require all granted
     </Directory>
 
-    ErrorLog \${APACHE_LOG_DIR}/wordpress.com-error.log
-    CustomLog \${APACHE_LOG_DIR}/wordpress.com-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/wordpress.com-error.log
+    CustomLog ${APACHE_LOG_DIR}/wordpress.com-access.log combined
 </VirtualHost>
-EOF
-
-# Configure Apache Virtual Host
-# RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
-   # cat <<EOF > /etc/apache2/sites-available/wordpress.com.conf
-#<VirtualHost *:80>
-    #ServerName 10.184.49.241
-    #ServerAdmin webmaster@localhost
-   # DocumentRoot /var/www/html/wordpress
-
-    #<Directory "/var/www/html/wordpress">
-      #  AllowOverride All
-        #Require all granted
-   # </Directory>
-
-    #ErrorLog \${APACHE_LOG_DIR}/wordpress.com-error.log
-    #CustomLog \${APACHE_LOG_DIR}/wordpress.com-access.log combined
-#</VirtualHost>
-#EOF
+EOF'
 
 # Enable the site and restart Apache
 RUN a2ensite wordpress.com.conf && \
