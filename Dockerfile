@@ -51,22 +51,28 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
-RUN set -e && \
+RUN set -e; \
+    APACHE_ROOT="/var/www/html"; \
+    if [ -f "${APACHE_ROOT}/wp-config.php" ]; then \
+        echo "⚠️ Removing old wp-config.php"; \
+        rm -rf ${APACHE_ROOT}/wp-config.php; \
+    fi; \
     if [ ! -f "${APACHE_ROOT}/wp-config-sample.php" ]; then \
         echo "❌ ERROR: wp-config-sample.php not found in ${APACHE_ROOT}"; \
         exit 1; \
-    fi && \
-    cp ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s|database_name_here|${DB_NAME}|g" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s|username_here|${DB_USER}|g" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s|password_here|${DB_PASSWORD}|g" ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s|localhost|${DB_HOST}|g" ${APACHE_ROOT}/wp-config.php && \
-    echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php && \
-    echo "define( 'WP_DEBUG', true );" >> ${APACHE_ROOT}/wp-config.php && \
-    sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" ${APACHE_ROOT}/wp-config.php && \
-    chown www-data:www-data ${APACHE_ROOT}/wp-config.php && chmod 644 ${APACHE_ROOT}/wp-config.php && \
-    echo "✅ wp-config.php successfully configured!"
-
+    fi; \
+    cp ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php; \
+    sed -i "s|database_name_here|${DB_NAME}|g" ${APACHE_ROOT}/wp-config.php; \
+    sed -i "s|username_here|${DB_USER}|g" ${APACHE_ROOT}/wp-config.php; \
+    sed -i "s|password_here|${DB_PASSWORD}|g" ${APACHE_ROOT}/wp-config.php; \
+    sed -i "s|localhost|${DB_HOST}|g" ${APACHE_ROOT}/wp-config.php; \
+    if grep -q "define( 'WP_DEBUG', false );" ${APACHE_ROOT}/wp-config.php; then \
+        sed -i "/define( 'WP_DEBUG', false );/d" ${APACHE_ROOT}/wp-config.php; \
+    fi; \
+    echo "define( 'WP_DEBUG', true );" >> ${APACHE_ROOT}/wp-config.php; \
+    echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php; \
+    chown www-data:www-data ${APACHE_ROOT}/wp-config.php && chmod 644 ${APACHE_ROOT}/wp-config.php; \
+    echo "✅ New wp-config.php successfully configured!"
 
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
