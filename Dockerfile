@@ -50,29 +50,49 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     (echo "🔄 Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
-
 RUN set -e; \
     APACHE_ROOT="/var/www/html/wordpress"; \
-    if [ -f "${APACHE_ROOT}/wp-config.php" ]; then \
+    WP_CONFIG="${APACHE_ROOT}/wp-config.php"; \
+    WP_SAMPLE="${APACHE_ROOT}/wp-config-sample.php"; \
+    \
+    # Remove old wp-config.php if it exists
+    if [ -f "${WP_CONFIG}" ]; then \
         echo "⚠️ Removing old wp-config.php"; \
-        rm -rf ${APACHE_ROOT}/wp-config.php; \
+        rm -f "${WP_CONFIG}"; \
     fi; \
-    if [ ! -f "${APACHE_ROOT}/wp-config-sample.php" ]; then \
+    \
+    # Check if wp-config-sample.php exists
+    if [ ! -f "${WP_SAMPLE}" ]; then \
         echo "❌ ERROR: wp-config-sample.php not found in ${APACHE_ROOT}"; \
         exit 1; \
     fi; \
-    cp ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php; \
-    sed -i "s|database_name_here|${DB_NAME}|g" ${APACHE_ROOT}/wp-config.php; \
-    sed -i "s|username_here|${DB_USER}|g" ${APACHE_ROOT}/wp-config.php; \
-    sed -i "s|password_here|${DB_PASSWORD}|g" ${APACHE_ROOT}/wp-config.php; \
-    sed -i "s|localhost|${DB_HOST}|g" ${APACHE_ROOT}/wp-config.php; \
-    if grep -q "define( 'WP_DEBUG', false );" ${APACHE_ROOT}/wp-config.php; then \
-        sed -i "/define( 'WP_DEBUG', false );/d" ${APACHE_ROOT}/wp-config.php; \
+    \
+    # Copy new wp-config.php from sample
+    cp "${WP_SAMPLE}" "${WP_CONFIG}"; \
+    \
+    # Update database settings in wp-config.php
+    sed -i "s|database_name_here|${DB_NAME}|g" "${WP_CONFIG}"; \
+    sed -i "s|username_here|${DB_USER}|g" "${WP_CONFIG}"; \
+    sed -i "s|password_here|${DB_PASSWORD}|g" "${WP_CONFIG}"; \
+    sed -i "s|localhost|${DB_HOST}|g" "${WP_CONFIG}"; \
+    \
+    # Remove existing WP_DEBUG definition and replace it
+    sed -i "/define( 'WP_DEBUG', false );/d" "${WP_CONFIG}"; \
+    echo "define( 'WP_DEBUG', true );" >> "${WP_CONFIG}"; \
+    \
+    # Ensure FS_METHOD is set correctly
+    if ! grep -q "define( 'FS_METHOD', 'direct' );" "${WP_CONFIG}"; then \
+        echo "define( 'FS_METHOD', 'direct' );" >> "${WP_CONFIG}"; \
     fi; \
-    echo "define( 'WP_DEBUG', true );" >> ${APACHE_ROOT}/wp-config.php; \
-    echo "define( 'FS_METHOD', 'direct' );" >> ${APACHE_ROOT}/wp-config.php; \
-    chown www-data:www-data ${APACHE_ROOT}/wp-config.php && chmod 644 ${APACHE_ROOT}/wp-config.php; \
+    \
+    # Ensure correct table prefix
+    sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" "${WP_CONFIG}"; \
+    \
+    # Set correct permissions
+    chown www-data:www-data "${WP_CONFIG}" && chmod 644 "${WP_CONFIG}"; \
+    \
     echo "✅ New wp-config.php successfully configured!"
+
 
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
