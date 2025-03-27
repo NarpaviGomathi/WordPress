@@ -93,7 +93,8 @@ RUN set -e; \
     \
     echo "✅ New wp-config.php successfully configured!"
 
-    
+RUN a2enmod rewrite
+
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 
