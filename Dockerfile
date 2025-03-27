@@ -9,6 +9,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DB_HOST=10.184.49.241 \
     APACHE_ROOT=/var/www/html/wordpress 
 
+# Set build argument to prevent Docker caching old configs
+ARG CACHE_BUST=1
+
 # Set timezone and install dependencies
 RUN apt update && \
     apt install -y \
@@ -35,8 +38,10 @@ RUN apt update && \
     apt-get update && apt-get install -y git ca-certificates && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
-RUN rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT}
+# Enable Apache rewrite module
+RUN a2enmod rewrite
 
+RUN rm -rf ${APACHE_ROOT} && mkdir -p ${APACHE_ROOT}
 
 RUN apt-get update && apt-get install -y curl && \
     curl -sSL https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh -o /usr/local/bin/wait-for-it && \
@@ -50,8 +55,11 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     (echo "🔄 Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
+
+
+WORKDIR /var/www/html/wordpress
+RUN rm -f wp-config.php && cp wp-config-sample.php wp-config.php
 RUN set -e; \
-    APACHE_ROOT="/var/www/html/wordpress"; \
     WP_CONFIG="${APACHE_ROOT}/wp-config.php"; \
     WP_SAMPLE="${APACHE_ROOT}/wp-config-sample.php"; \
     \
@@ -68,7 +76,7 @@ RUN set -e; \
     fi; \
     \
     # Copy new wp-config.php from sample
-    mv "${WP_SAMPLE}" "${WP_CONFIG}"; \
+    cp "${WP_SAMPLE}" "${WP_CONFIG}"; \
     \
     # Update database settings in wp-config.php
     sed -i "s|database_name_here|${DB_NAME}|g" "${WP_CONFIG}"; \
