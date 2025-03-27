@@ -75,47 +75,30 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is a
 RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
     echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
 
-WORKDIR /var/www/html/wordpress
-RUN rm -f wp-config.php && cp wp-config-sample.php wp-config.php
-RUN set -e; \
-    WP_CONFIG="${APACHE_ROOT}/wp-config.php"; \
-    WP_SAMPLE="${APACHE_ROOT}/wp-config-sample.php"; \
+# Set correct permissions and update wp-config.php
+RUN cd ${APACHE_ROOT} && \
+    chown -R www-data:www-data ${APACHE_ROOT} && \
+    find ${APACHE_ROOT} -type d -exec chmod 755 {} \; && \
+    rm -f ${APACHE_ROOT}/wp-config.php && \
+    cp ${APACHE_ROOT}/wp-config-sample.php ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/database_name_here/${DB_NAME}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/username_here/${DB_USER}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/password_here/${DB_PASSWORD}/" ${APACHE_ROOT}/wp-config.php && \
     \
-    # Remove old wp-config.php if it exists
-    if [ -f "${WP_CONFIG}" ]; then \
-        echo "⚠️ Removing old wp-config.php"; \
-        rm -f "${WP_CONFIG}"; \
-    fi; \
+    # Remove existing WP_DEBUG definition if present and replace it
+    sed -i "/define( 'WP_DEBUG', false );/d" ${APACHE_ROOT}/wp-config.php && \
+    echo "define( 'WP_DEBUG', true );" >> ${APACHE_ROOT}/wp-config.php && \
     \
-    # Check if wp-config-sample.php exists
-    if [ ! -f "${WP_SAMPLE}" ]; then \
-        echo "❌ ERROR: wp-config-sample.php not found in ${APACHE_ROOT}"; \
-        exit 1; \
-    fi; \
-    \
-    # Copy new wp-config.php from sample
-    cp "${WP_SAMPLE}" "${WP_CONFIG}"; \
-    \
-    # Update database settings in wp-config.php
-    sed -i "s|database_name_here|${DB_NAME}|g" "${WP_CONFIG}"; \
-    sed -i "s|username_here|${DB_USER}|g" "${WP_CONFIG}"; \
-    sed -i "s|password_here|${DB_PASSWORD}|g" "${WP_CONFIG}"; \
-    sed -i "s|localhost|${DB_HOST}|g" "${WP_CONFIG}"; \
-    \
-    # Remove existing WP_DEBUG definition and replace it
-    sed -i "/define( 'WP_DEBUG', false );/d" "${WP_CONFIG}"; \
-    echo "define( 'WP_DEBUG', true );" >> "${WP_CONFIG}"; \
-    \
-    # Ensure FS_METHOD is set correctly
-    if ! grep -q "define( 'FS_METHOD', 'direct' );" "${WP_CONFIG}"; then \
-        echo "define( 'FS_METHOD', 'direct' );" >> "${WP_CONFIG}"; \
-    fi; \
+   # Ensure FS_METHOD is set correctly
+    if ! grep -q "define( 'FS_METHOD', 'direct' );" "${APACHE_ROOT}/wp-config.php"; then \
+        echo "define( 'FS_METHOD', 'direct' );" >> "${APACHE_ROOT}/wp-config.php"; \
+    fi && \
     \
     # Ensure correct table prefix
-    sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" "${WP_CONFIG}"; \
+    sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" "${APACHE_ROOT}/wp-config.php" && \
     \
     # Set correct permissions
-    chown www-data:www-data "${WP_CONFIG}" && chmod 644 "${WP_CONFIG}"; \
+    chown www-data:www-data "${APACHE_ROOT}/wp-config.php" && chmod 644 "${APACHE_ROOT}/wp-config.php" && \
     \
     echo "✅ New wp-config.php successfully configured!"
 
