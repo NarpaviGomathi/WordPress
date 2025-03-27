@@ -125,11 +125,11 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 
 # Configure Apache Virtual Host
-RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
+RUN echo "ServerName knode" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerName wordpress.com' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerAlias www.wordpress.com' >> /etc/apache2/sites-available/wordpress.com.conf && \
-    echo '    ServerAdmin webmaster@10.184.49.241' >> /etc/apache2/sites-available/wordpress.com.conf && \
+    echo '    ServerAdmin webmaster@knode' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    DocumentRoot /var/www/html/wordpress' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    <Directory "/var/www/html/wordpress">' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '        AllowOverride All' >> /etc/apache2/sites-available/wordpress.com.conf && \
