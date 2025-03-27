@@ -93,6 +93,9 @@ RUN set -e; \
     \
     echo "✅ New wp-config.php successfully configured!"
 
+    
+CMD ["apache2ctl", "-D", "FOREGROUND"]
+
 
 # Configure Apache Virtual Host
 RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
