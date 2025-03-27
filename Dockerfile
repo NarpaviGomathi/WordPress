@@ -52,7 +52,7 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chmod -R 755 ${APACHE_ROOT}
 
 RUN set -e; \
-    APACHE_ROOT="/var/www/html"; \
+    APACHE_ROOT="/var/www/html/wordpress"; \
     if [ -f "${APACHE_ROOT}/wp-config.php" ]; then \
         echo "⚠️ Removing old wp-config.php"; \
         rm -rf ${APACHE_ROOT}/wp-config.php; \
