@@ -67,7 +67,7 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is a
         DROP USER IF EXISTS '${DB_USER}'@'%'; \
         CREATE DATABASE ${DB_NAME}; \
         CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-        GRANT ALL PRIVILEGES ON ${DB_NAME}* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+        GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
         GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
         FLUSH PRIVILEGES;"
    
