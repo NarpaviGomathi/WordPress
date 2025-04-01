@@ -84,6 +84,7 @@ RUN cd ${APACHE_ROOT} && \
     sed -i "s/database_name_here/${DB_NAME}/" ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/username_here/${DB_USER}/" ${APACHE_ROOT}/wp-config.php && \
     sed -i "s/password_here/${DB_PASSWORD}/" ${APACHE_ROOT}/wp-config.php && \
+    sed -i "s/localhost/${DB_HOST}/" ${APACHE_ROOT}/wp-config.php && \
     \
     # Remove existing WP_DEBUG definition if present and replace it
     sed -i "/define( 'WP_DEBUG', false );/d" ${APACHE_ROOT}/wp-config.php && \
