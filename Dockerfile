@@ -56,7 +56,7 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
-RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
+RUN wait-for-it ${DB_HOST} --timeout=60 --strict && echo "✅ Database is available!" && \
     echo "DB_HOST: ${DB_HOST}" && \
     echo "DB_USER: ${DB_USER}" && \
     echo "DB_PASSWORD: ${DB_PASSWORD}" && \
