@@ -54,19 +54,19 @@ spec:
           value: "mariadb-service:3306"  # MariaDB IP
         - name: DB_USER
           valueFrom:
-                secretKeyRef:
-                  name: mariadb-secret
-                  key: mariadb-user
+            secretKeyRef:
+              name: mariadb-secret
+              key: mariadb-user
         - name: DB_PASSWORD
           valueFrom:
-                secretKeyRef:
-                  name: mariadb-secret
-                  key: mariadb-password
+            secretKeyRef:
+              name: mariadb-secret
+              key: mariadb-password
         - name: DB_NAME
-           valueFrom:
-                secretKeyRef:
-                  name: mariadb-secret
-                  key: mariadb-name
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: mariadb-name
         volumeMounts:
           - name: wordpress-persistent-storage
             mountPath: /var/www/html
@@ -74,4 +74,3 @@ spec:
         - name: wordpress-persistent-storage
           persistentVolumeClaim:
             claimName: wp-pv-claim
-      restartPolicy: Always
