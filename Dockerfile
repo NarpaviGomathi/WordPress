@@ -109,7 +109,7 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 
 
 # Configure Apache Virtual Host
-RUN echo "ServerName 10.184.49.241" >> /etc/apache2/apache2.conf && \
+RUN echo "ServerName mariadb-service" >> /etc/apache2/apache2.conf && \
     echo '<VirtualHost *:80>' > /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerName wordpress.com' >> /etc/apache2/sites-available/wordpress.com.conf && \
     echo '    ServerAlias www.wordpress.com' >> /etc/apache2/sites-available/wordpress.com.conf && \
