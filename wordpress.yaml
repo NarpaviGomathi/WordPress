@@ -50,13 +50,21 @@ spec:
       - name: wordpress
         image: gomathi747/wordpress:latest  # Custom WordPress Image
         env:
-        - name: WORDPRESS_DB_HOST
+        - name: WORDPRESS_DB
           value: "10.184.49.241"  # MariaDB IP
-        - name: WORDPRESS_DB_USER
+        - name: WORDPRESS_USER
+          valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-user
           value: "wordpress_user"
-        - name: WORDPRESS_DB_PASSWORD
+        - name: WORDPRESS_PASSWORD
+          valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-password
           value: "mypassword"
-        - name: WORDPRESS_DB_NAME
+        - name: WORDPRESS_NAME
           value: "wordpress_db"
         ports:
         - containerPort: 80
