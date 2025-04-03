@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DB_NAME=wordpress_db \
     DB_USER=wordpress_user \
     DB_PASSWORD=mypassword \
-    DB_HOST=mariadb-service:3306 \
+    DB_HOST=mariadb-service \
     APACHE_ROOT=/var/www/html/wordpress 
 
 # Set build argument to prevent Docker caching old configs
