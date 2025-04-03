@@ -51,7 +51,7 @@ spec:
         image: gomathi747/wordpress:latest  # Custom WordPress Image
         env:
         - name: WORDPRESS_DB
-          value: "10.184.49.241"  # MariaDB IP
+          value: "mariadb-service:3306"  # MariaDB IP
         - name: WORDPRESS_USER
           valueFrom:
                 secretKeyRef:
@@ -63,7 +63,6 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-password
-          value: "mypassword"
         - name: WORDPRESS_NAME
           value: "wordpress_db"
         ports:
