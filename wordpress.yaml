@@ -48,16 +48,16 @@ spec:
     spec:
       initContainers:
         - name: init-wordpress
-          image: gomathi747/wordpress:latest  # Custom WordPress Image
+          image: gomathi747/wordpress:latest
           command: ["/bin/sh", "-c"]
           args:
-            - cp -r /usr/src/wordpress/* /var/www/html/ && 
-              chown -R www-data:www-data /var/www/html/ && 
+            - git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/ &&
+              chown -R www-data:www-data /var/www/html/ &&
               chmod -R 755 /var/www/html/
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
-      containers:
+     containers:
         - name: wordpress
           image: gomathi747/wordpress:latest  # Custom WordPress Image
           env:
