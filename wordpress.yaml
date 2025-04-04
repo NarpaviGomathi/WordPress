@@ -51,14 +51,22 @@ spec:
           image: gomathi747/wordpress:latest
           command: ["/bin/sh", "-c"]
           args:
-            - git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/ &&
-              chown -R www-data:www-data /var/www/html/ &&
+            - |
+              if [ -d "/var/www/html/.git" ]; then
+                echo "Existing Git repo found. Pulling latest changes..."
+                cd /var/www/html && git pull origin main
+              else
+                echo "No Git repo found. Cleaning up and cloning..."
+                rm -rf /var/www/html/*
+                git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/
+              fi
+              chown -R www-data:www-data /var/www/html/
               chmod -R 755 /var/www/html/
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
 
-      containers:  # Fixed indentation here
+      containers:
         - name: wordpress
           image: gomathi747/wordpress:latest  # Custom WordPress Image
           env:
