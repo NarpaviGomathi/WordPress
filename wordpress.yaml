@@ -46,6 +46,17 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+       initContainers:
+      - name: init-wordpress
+        image: gomathi747/wordpress:latest  # Your WordPress Image
+        command: ["/bin/sh", "-c"]
+        args:
+          - cp -r /usr/src/wordpress/* /var/www/html/ && 
+            chown -R www-data:www-data /var/www/html/ && 
+            chmod -R 755 /var/www/html/
+        volumeMounts:
+          - name: wordpress-persistent-storage
+            mountPath: /var/www/html
       containers:
       - name: wordpress
         image: gomathi747/wordpress:latest  # Custom WordPress Image
