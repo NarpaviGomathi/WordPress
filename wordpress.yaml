@@ -51,7 +51,7 @@ spec:
         image: gomathi747/wordpress:latest  # Custom WordPress Image
         env:
         - name: DB_HOST
-          value: "mariadb-service"  # MariaDB IP
+          value: "10.184.49.241"  # MariaDB IP
         - name: DB_USER
           valueFrom:
             secretKeyRef:
