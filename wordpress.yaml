@@ -57,7 +57,8 @@ spec:
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
-     containers:
+
+      containers:  # Fixed indentation here
         - name: wordpress
           image: gomathi747/wordpress:latest  # Custom WordPress Image
           env:
@@ -81,6 +82,7 @@ spec:
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
+
       volumes:
         - name: wordpress-persistent-storage
           persistentVolumeClaim:
