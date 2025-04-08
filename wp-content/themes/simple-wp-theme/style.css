@@ -1,17 +1,16 @@
 /*
-Theme Name: Simple WP Theme
-Theme URI: https://example.com/simple-wp-theme
-Author: gomthig
-Author URI: https://example.com
-Description: A minimal WordPress theme for testing
+Theme Name: Sample Theme
+Theme URI: http://example.com/sampletheme
+Author: Your Name
+Author URI: http://example.com
+Description: A minimal sample WordPress theme.
 Version: 1.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: simple-wp-theme
+Text Domain: sampletheme
 */
+
 body {
     font-family: Arial, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
+    background-color: #f9f9f9;
 }
