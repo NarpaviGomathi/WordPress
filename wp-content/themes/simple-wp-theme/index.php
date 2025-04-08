@@ -1,13 +1,18 @@
 <?php get_header(); ?>
-<div class="content">
-    <h1><?php bloginfo('name'); ?></h1>
-    <p><?php bloginfo('description'); ?></p>
-    
-    <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
-        <article>
-            <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-            <p><?php the_excerpt(); ?></p>
-        </article>
-    <?php endwhile; endif; ?>
-</div>
+
+<h1>Welcome to Sample Theme</h1>
+<p>This is a minimal WordPress theme template.</p>
+
+<?php
+if ( have_posts() ) :
+    while ( have_posts() ) : the_post();
+        the_title('<h2>', '</h2>');
+        the_content();
+    endwhile;
+else :
+    echo '<p>No content found</p>';
+endif;
+?>
+
 <?php get_footer(); ?>
+
