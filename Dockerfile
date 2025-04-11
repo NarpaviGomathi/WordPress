@@ -56,9 +56,30 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
+RUN /bin/bash -c '\
+  echo "⏳ Waiting for MariaDB to be ready at ${DB_HOST}..."; \
+  wait-for-it ${DB_HOST}:3306 --timeout=60 --strict; \
+  echo "🔍 Checking if DB '\''${DB_NAME}'\'' already exists..."; \
+  DB_EXISTS=$(mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} \
+    -e "SHOW DATABASES LIKE '\''${DB_NAME}'\'';" | grep "${DB_NAME}" || true); \
+  if [ -z "$DB_EXISTS" ]; then \
+    echo "✅ Creating database and user..."; \
+    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "\
+      CREATE DATABASE ${DB_NAME}; \
+      CREATE USER IF NOT EXISTS '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\''; \
+      GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\''; \
+      FLUSH PRIVILEGES;"; \
+  else \
+    echo "🎉 Database '\''${DB_NAME}'\'' already exists — skipping creation."; \
+  fi; \
+'
+
 
 RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
-    echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
+    echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
+    echo "# CREATE USER '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
+    echo "# GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
+    echo "📜 Verifying user grants..."; \
 
 # Set correct permissions and update wp-config.php
 RUN cd ${APACHE_ROOT} && \
