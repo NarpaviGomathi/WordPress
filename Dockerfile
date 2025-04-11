@@ -56,29 +56,19 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
-RUN /bin/bash -c '\
-  echo "⏳ Waiting for MariaDB to be ready at ${DB_HOST}..."; \
-  wait-for-it ${DB_HOST}:3306 --timeout=60 --strict; \
-  echo "🔍 Checking if DB '\''${DB_NAME}'\'' already exists..."; \
-  DB_EXISTS=$(mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} \
-    -e "SHOW DATABASES LIKE '\''${DB_NAME}'\'';" | grep "${DB_NAME}" || true); \
-  if [ -z "$DB_EXISTS" ]; then \
-    echo "✅ Creating database and user..."; \
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e "\
-      CREATE DATABASE ${DB_NAME}; \
-      CREATE USER IF NOT EXISTS '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\''; \
-      GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\''; \
-      FLUSH PRIVILEGES;"; \
-  else \
-    echo "🎉 Database '\''${DB_NAME}'\'' already exists — skipping creation."; \
-  fi; \
-  echo "📜 Verifying user grants..."; \
-  mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "\
-    SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\''; \
-    SHOW TABLES FROM ${DB_NAME};" \
-'
+RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
+    echo "DB_HOST: ${DB_HOST}" && \
+    echo "DB_USER: ${DB_USER}" && \
+    echo "DB_PASSWORD: ${DB_PASSWORD}" && \
+    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e " \
+        GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
+        FLUSH PRIVILEGES; \
+        GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+        CREATE DATABASE ${DB_NAME}; \
+        CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+        GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+        FLUSH PRIVILEGES;"
 
-# Show grants and tables in the database (for debugging purposes)
 RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
     echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
 
@@ -156,18 +146,7 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 # FLUSH PRIVILEGES; \
 # mysql --protocol=TCP -h "${DB_HOST}" -u "root" -p"${DB_PASSWORD}"
 # GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
-# DROP DATABASE IF EXISTS ${DB_NAME}; \
+# 
 # DROP USER IF EXISTS '${DB_USER}'@'%'; \
-#RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
-   # echo "DB_HOST: ${DB_HOST}" && \
-   # echo "DB_USER: ${DB_USER}" && \
-    #echo "DB_PASSWORD: ${DB_PASSWORD}" && \
-    #mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e " \
-       # GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
-       # FLUSH PRIVILEGES; \
-       # CREATE DATABASE ${DB_NAME}; \
-       # GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
-       # CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-        #GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-       # FLUSH PRIVILEGES;"
+
 
