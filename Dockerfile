@@ -56,18 +56,6 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
-RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
-    echo "DB_HOST: ${DB_HOST}" && \
-    echo "DB_USER: ${DB_USER}" && \
-    echo "DB_PASSWORD: ${DB_PASSWORD}" && \
-    mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e " \
-        GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
-        FLUSH PRIVILEGES; \
-        GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
-        CREATE DATABASE ${DB_NAME}; \
-        CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-        GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
-        FLUSH PRIVILEGES;"
 
 RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
     echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD}
@@ -149,4 +137,16 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 # 
 # DROP USER IF EXISTS '${DB_USER}'@'%'; \
 
+#RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
+   # echo "DB_HOST: ${DB_HOST}" && \
+    #echo "DB_USER: ${DB_USER}" && \
+    #echo "DB_PASSWORD: ${DB_PASSWORD}" && \
+    #mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e " \
+        #GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
+        #FLUSH PRIVILEGES; \
+        #GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
+        #CREATE DATABASE ${DB_NAME}; \
+        #CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+       # GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
+       # FLUSH PRIVILEGES;"
 
