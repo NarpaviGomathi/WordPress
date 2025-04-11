@@ -72,15 +72,13 @@ RUN /bin/bash -c '\
   else \
     echo "🎉 Database '\''${DB_NAME}'\'' already exists — skipping creation."; \
   fi; \
+  echo "# CREATE USER '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
+  echo "# GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
+  echo "📜 Verifying user grants..."; \
+  mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} -e "\
+    SHOW GRANTS FOR '\''${DB_USER}'\''@'\''%'\''; \
+    SHOW TABLES FROM ${DB_NAME};" \
 '
-
-
-RUN echo "SHOW GRANTS FOR '${DB_USER}'@'%';" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
-    echo "SHOW TABLES FROM ${DB_NAME};" | mysql --protocol=TCP -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} && \
-    echo "# CREATE USER '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
-    echo "# GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '\''${DB_USER}'\''@'\''%'\'' IDENTIFIED BY '\''${DB_PASSWORD}'\'';"; \
-    echo "📜 Verifying user grants..."; \
-
 # Set correct permissions and update wp-config.php
 RUN cd ${APACHE_ROOT} && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
