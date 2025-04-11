@@ -61,10 +61,10 @@ RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is a
     echo "DB_USER: ${DB_USER}" && \
     echo "DB_PASSWORD: ${DB_PASSWORD}" && \
     mysql --protocol=TCP -h ${DB_HOST} -u root -p${DB_PASSWORD} -e " \
-        GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
         GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASSWORD}' WITH GRANT OPTION; \
         FLUSH PRIVILEGES; \
         CREATE DATABASE ${DB_NAME}; \
+        GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER ON ${DB_NAME}.* TO '${DB_USER}'@'%'; \
         CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
         GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}'; \
         FLUSH PRIVILEGES;"
