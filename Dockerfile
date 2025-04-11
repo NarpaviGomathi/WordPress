@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DB_USER=wordpress_user \
     DB_PASSWORD=mypassword \
     DB_HOST=10.184.49.241 \
-    APACHE_ROOT=/var/www/html/wordpress 
+    APACHE_ROOT=/var/www/html/wordpress
 
 # Set build argument to prevent Docker caching old configs
 ARG CACHE_BUST=1
