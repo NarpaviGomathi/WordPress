@@ -92,7 +92,7 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-name
-             - name: WP_URL
+            - name: WP_URL
               value: "http://10.184.49.239:31463/wordpress"
             - name: WP_TITLE
               value: "My WordPress Site"
