@@ -38,6 +38,10 @@ RUN apt update && \
     apt-get update && apt-get install -y git ca-certificates && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y git less unzip curl mariadb-client && \
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
+
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
