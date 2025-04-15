@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,6 +13,7 @@ spec:
   selector:
     app: wordpress
     tier: frontend
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -20,12 +22,13 @@ metadata:
   labels:
     app: wordpress
 spec:
-  storageClassName: rook-ceph-block
+  storageClassName: rook-ceph-block  # Make sure this exists
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,17 +52,15 @@ spec:
       initContainers:
         - name: init-wordpress
           image: gomathi747/wordpress:latest
-          command: ["/bin/sh", "-c"]
+          command: ["/bin/bash", "-c"]
           args:
             - |
-              mkdir -p /var/www/html/wordpress
-              if [ -d "/var/www/html/wordpress/.git" ]; then
-                echo "Existing Git repo found. Pulling latest changes..."
-                cd /var/www/html/wordpress && git pull origin main
-              else
-                echo "No Git repo found. Cleaning up and cloning..."
-                rm -rf /var/www/html/wordpress*
+              echo "🔁 Syncing Git repo to persistent storage..."
+              if [ ! -d "/var/www/html/wordpress/.git" ]; then
+                rm -rf /var/www/html/wordpress/*
                 git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress
+              else
+                cd /var/www/html/wordpress && git pull origin main
               fi
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
@@ -69,10 +70,12 @@ spec:
 
       containers:
         - name: wordpress
-          image: gomathi747/wordpress:latest  # Custom WordPress Image
+          image: gomathi747/wordpress:latest
+          ports:
+            - containerPort: 80
           env:
             - name: DB_HOST
-              value: "10.184.49.241"  # MariaDB IP
+              value: "10.184.49.241"
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
