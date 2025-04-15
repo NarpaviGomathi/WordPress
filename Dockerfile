@@ -59,6 +59,28 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     (echo "Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
+    \
+    cd ${APACHE_ROOT} && \
+    \
+    wp config create \
+      --dbname=wordpress_db \
+      --dbuser=wordpress_user \
+      --dbpass=mypassword \
+      --dbhost=10.184.49.241 \
+      --path=${APACHE_ROOT} \
+      --allow-root \
+      --skip-check && \
+    \
+    wp core install \
+      --url="http://10.184.49.239:31463/wordpress" \
+      --title="My WordPress Site" \
+      --admin_user=admin \
+      --admin_password=admin123 \
+      --admin_email=admin@example.com \
+      --path=${APACHE_ROOT} \
+      --allow-root
+
+RUN chown -R www-data:www-data ${APACHE_ROOT} && chmod 755 -R ${APACHE_ROOT}
 
 RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "Database is available!" && \
     echo "DB_HOST: ${DB_HOST}" && \
