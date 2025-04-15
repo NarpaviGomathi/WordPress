@@ -56,11 +56,11 @@ RUN a2enmod rewrite
 
 # Clone WordPress repository with retry logic
 RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} || \
-    (echo "🔄 Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
+    (echo "Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT}
 
-RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "✅ Database is available!" && \
+RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "Database is available!" && \
     echo "DB_HOST: ${DB_HOST}" && \
     echo "DB_USER: ${DB_USER}" && \
     echo "DB_PASSWORD: ${DB_PASSWORD}" && \
@@ -105,7 +105,7 @@ RUN cd ${APACHE_ROOT} && \
     # Set correct permissions
     chown www-data:www-data "${APACHE_ROOT}/wp-config.php" && chmod 644 "${APACHE_ROOT}/wp-config.php" && \
     \
-    echo "✅ New wp-config.php successfully configured!"
+    echo "New wp-config.php successfully configured!"
 
 RUN a2enmod rewrite
 
