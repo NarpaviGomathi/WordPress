@@ -52,16 +52,17 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              if [ -d "/var/www/html/.git" ]; then
+              mkdir -p /var/www/html/wordpress
+              if [ -d "/var/www/html/wordpress/.git" ]; then
                 echo "Existing Git repo found. Pulling latest changes..."
-                cd /var/www/html && git pull origin main
+                cd /var/www/html/wordpress && git pull origin main
               else
                 echo "No Git repo found. Cleaning up and cloning..."
-                rm -rf /var/www/html/*
-                git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/
+                rm -rf /var/www/html/wordpress*
+                git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress
               fi
-              chown -R www-data:www-data /var/www/html/
-              chmod -R 755 /var/www/html/
+              chown -R www-data:www-data /var/www/html/wordpress
+              chmod -R 755 /var/www/html/wordpress
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
