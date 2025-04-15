@@ -62,6 +62,7 @@ spec:
               else
                 cd /var/www/html/wordpress && git pull origin main
               fi
+              rm -f /var/www/html/wordpress/wp-config.php
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
           volumeMounts:
