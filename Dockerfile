@@ -72,11 +72,11 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
       --skip-check && \
     \
     wp core install \
-      --url="http://10.184.49.239:31463/wordpress" \
+      --url="http://localhost/wordpress" \
       --title="My WordPress Site" \
-      --admin_user=admin \
-      --admin_password=admin123 \
-      --admin_email=admin@example.com \
+      --admin_user="Gom@thi7777"\
+      --admin_password="admin123" \
+      --admin_email="admin@example.com" \
       --path=${APACHE_ROOT} \
       --allow-root
 
