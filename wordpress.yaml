@@ -65,7 +65,7 @@ spec:
               chmod -R 755 /var/www/html/wordpress
           volumeMounts:
             - name: wordpress-persistent-storage
-              mountPath: /var/www/html/wordpress
+              mountPath: /var/www/html
 
       containers:
         - name: wordpress
@@ -90,7 +90,7 @@ spec:
                   key: mariadb-name
           volumeMounts:
             - name: wordpress-persistent-storage
-              mountPath: /var/www/html/wordpress
+              mountPath: /var/www/html
 
       volumes:
         - name: wordpress-persistent-storage
