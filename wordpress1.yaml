@@ -76,7 +76,8 @@ spec:
           args:
             - |
               set -e
-              echo "🔁 Syncing Git repo..."
+              echo " Syncing Git repo..."
+              git config --global --add safe.directory /var/www/html/wordpress
               if [ ! -d "/var/www/html/wordpress/.git" ]; then
                 rm -rf /var/www/html/wordpress/*
                 git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress
@@ -84,12 +85,12 @@ spec:
                 cd /var/www/html/wordpress && git pull origin main
               fi
 
-              echo "🧹 Removing old wp-config.php..."
+              echo "Removing old wp-config.php..."
               rm -f /var/www/html/wordpress/wp-config.php
 
               cd /var/www/html/wordpress
 
-              echo "⚙️ Generating wp-config.php from sample..."
+              echo " Generating wp-config.php from sample..."
               cp wp-config-sample.php wp-config.php
               sed -i "s/database_name_here/${DB_NAME}/" wp-config.php
               sed -i "s/username_here/${DB_USER}/"       wp-config.php
@@ -102,7 +103,7 @@ spec:
               fi
               sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" wp-config.php
 
-              echo "✅ wp-config.php templated"
+              echo "wp-config.php templated"
 
               chown www-data:www-data wp-config.php && chmod 644 wp-config.php
               chown -R www-data:www-data /var/www/html/wordpress
