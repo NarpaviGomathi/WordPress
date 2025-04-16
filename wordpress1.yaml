@@ -50,18 +50,6 @@ spec:
         app: wordpress
         tier: frontend
     spec:
-      initContainers:
-        - name: init-db-check
-          image: appropriate/curl:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo "⏳ Waiting for MariaDB at ${DB_HOST}:3306..."
-              until curl --silent tcp://${DB_HOST}:3306 >/dev/null 2>&1; do
-                sleep 2
-              done
-              echo "✅ MariaDB is up!"
-
         - name: init-wordpress
           image: gomathi747/wordpress:latest
           command: ["/bin/bash", "-c"]
