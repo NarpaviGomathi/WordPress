@@ -82,7 +82,10 @@ spec:
                 rm -rf /var/www/html/wordpress/*
                 git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress
               else
-                cd /var/www/html/wordpress && git pull origin main
+                cd /var/www/html/wordpress 
+                git reset --hard
+                git clean -fd
+                git pull origin main
               fi
 
               echo "Removing old wp-config.php..."
