@@ -79,7 +79,7 @@ spec:
             - name: WP_ADMIN_USER
               value: "Gom@thi7777"
             - name: WP_ADMIN_PASSWORD
-              value: "YourSecurePass"
+              value: "admin123"
             - name: WP_ADMIN_EMAIL
               value: "admin@example.com"
           args:
