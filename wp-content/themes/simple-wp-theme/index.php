@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<h1>Welcome to Sample Theme</h1>
+<h1>Welcome to GOD Theme</h1>
 <p>This is a minimal WordPress theme template.</p>
 
 <?php
