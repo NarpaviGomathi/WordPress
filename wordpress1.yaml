@@ -72,17 +72,7 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-name
-            - name: WP_URL
-              value: "http://10.184.49.239:31282/wordpress"
-            - name: WP_TITLE
-              value: "My WordPress Site"
-            - name: WP_ADMIN_USER
-              value: "Gom@thi7777"
-            - name: WP_ADMIN_PASSWORD
-              value: "admin123"
-            - name: WP_ADMIN_EMAIL
-              value: "admin@example.com"
-          args:
+            args:
             - |
               set -e
               echo "🔁 Syncing Git repo..."
@@ -107,16 +97,7 @@ spec:
                 echo "define( 'FS_METHOD', 'direct' );"     >> /var/www/html/wordpress/wp-config.php; \
               fi && \
               sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" /var/www/html/wordpress/wp-config.php
-              echo "✅ wp-config.php templated"
-              echo "🛠 Installing WordPress..."
-              wp core install \
-                --url="$WP_URL" \
-                --title="$WP_TITLE" \
-                --admin_user="$WP_ADMIN_USER" \
-                --admin_password="$WP_ADMIN_PASSWORD" \
-                --admin_email="$WP_ADMIN_EMAIL" \
-                --skip-email \
-                --allow-root
+              echo "wp-config.php templated"
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
           volumeMounts:
