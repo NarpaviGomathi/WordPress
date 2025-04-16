@@ -59,9 +59,7 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     (echo "Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
     chmod -R 755 ${APACHE_ROOT} 
-
-RUN chown -R www-data:www-data ${APACHE_ROOT} && chmod 755 -R ${APACHE_ROOT}
-
+    
 RUN wait-for-it ${DB_HOST}:3306 --timeout=60 --strict && echo "Database is available!" && \
     echo "DB_HOST: ${DB_HOST}" && \
     echo "DB_USER: ${DB_USER}" && \
