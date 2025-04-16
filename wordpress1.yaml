@@ -98,7 +98,7 @@ spec:
               fi && \
               sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" /var/www/html/wordpress/wp-config.php
               echo "wp-config.php templated"
-              chown www-data:www-data "${APACHE_ROOT}/wp-config.php" && chmod 644 "${APACHE_ROOT}/wp-config.php"
+              chown www-data:www-data wp-config.php && chmod 644 wp-config.php
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
           volumeMounts:
