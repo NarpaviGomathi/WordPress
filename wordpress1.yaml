@@ -10,10 +10,11 @@ spec:
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 31282     
+      nodePort: 31282
   selector:
     app: wordpress
     tier: frontend
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -51,6 +52,17 @@ spec:
         tier: frontend
     spec:
       initContainers:
+        - name: init-db-check
+          image: appropriate/curl:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "⏳ Waiting for MariaDB at ${DB_HOST}:3306..."
+              until curl --silent tcp://${DB_HOST}:3306 >/dev/null 2>&1; do
+                sleep 2
+              done
+              echo "✅ MariaDB is up!"
+
         - name: init-wordpress
           image: gomathi747/wordpress:latest
           command: ["/bin/bash", "-c"]
@@ -72,7 +84,7 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-name
-            args:
+          args:
             - |
               set -e
               echo "🔁 Syncing Git repo..."
@@ -82,22 +94,27 @@ spec:
               else
                 cd /var/www/html/wordpress && git pull origin main
               fi
+
               echo "🧹 Removing old wp-config.php..."
               rm -f /var/www/html/wordpress/wp-config.php
+
               cd /var/www/html/wordpress
-              echo "⚙️ Generating wp-config.php..."
-              cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php && \
-              sed -i "s/database_name_here/${DB_NAME}/" /var/www/html/wordpress/wp-config.php && \
-              sed -i "s/username_here/${DB_USER}/"       /var/www/html/wordpress/wp-config.php && \
-              sed -i "s/password_here/${DB_PASSWORD}/"   /var/www/html/wordpress/wp-config.php && \
-              sed -i "s/localhost/${DB_HOST}/"           /var/www/html/wordpress/wp-config.php && \
-              sed -i "/define( 'WP_DEBUG', false );/d"   /var/www/html/wordpress/wp-config.php && \
-              echo "define( 'WP_DEBUG', true );"       >> /var/www/html/wordpress/wp-config.php && \
-              if ! grep -q "define( 'FS_METHOD', 'direct' );" /var/www/html/wordpress/wp-config.php; then \
-                echo "define( 'FS_METHOD', 'direct' );"     >> /var/www/html/wordpress/wp-config.php; \
-              fi && \
-              sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" /var/www/html/wordpress/wp-config.php
-              echo "wp-config.php templated"
+
+              echo "⚙️ Generating wp-config.php from sample..."
+              cp wp-config-sample.php wp-config.php
+              sed -i "s/database_name_here/${DB_NAME}/" wp-config.php
+              sed -i "s/username_here/${DB_USER}/"       wp-config.php
+              sed -i "s/password_here/${DB_PASSWORD}/"   wp-config.php
+              sed -i "s/localhost/${DB_HOST}/"           wp-config.php
+              sed -i "/define( 'WP_DEBUG', false );/d"   wp-config.php
+              echo "define( 'WP_DEBUG', true );"       >> wp-config.php
+              if ! grep -q "define( 'FS_METHOD', 'direct' );" wp-config.php; then
+                echo "define( 'FS_METHOD', 'direct' );"     >> wp-config.php
+              fi
+              sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" wp-config.php
+
+              echo "✅ wp-config.php templated"
+
               chown www-data:www-data wp-config.php && chmod 644 wp-config.php
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
