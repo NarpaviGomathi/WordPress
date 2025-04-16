@@ -90,6 +90,7 @@ spec:
 
               echo "Removing old wp-config.php..."
               rm -f /var/www/html/wordpress/wp-config.php
+              rm -f /var/www/html/wordpress/wp-admin/install.php
 
               cd /var/www/html/wordpress
 
