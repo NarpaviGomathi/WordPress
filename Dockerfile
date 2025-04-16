@@ -62,17 +62,8 @@ RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPres
     \
     cd ${APACHE_ROOT} && \
     \
-    wp config create \
-      --dbname=wordpress_db \
-      --dbuser=wordpress_user \
-      --dbpass=mypassword \
-      --dbhost=10.184.49.241 \
-      --path=${APACHE_ROOT} \
-      --allow-root \
-      --skip-check && \
-    \
     wp core install \
-      --url="http://localhost/wordpress" \
+      --url="http://10.184.49.239:31282/wordpress" \
       --title="My WordPress Site" \
       --admin_user="Gom@thi7777"\
       --admin_password="admin123" \
