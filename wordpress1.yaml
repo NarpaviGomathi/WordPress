@@ -96,13 +96,18 @@ spec:
               rm -f /var/www/html/wordpress/wp-config.php
               cd /var/www/html/wordpress
               echo "⚙️ Generating wp-config.php..."
-              wp config create \
-                --dbname="$DB_NAME" \
-                --dbuser="$DB_USER" \
-                --dbpass="$DB_PASSWORD" \
-                --dbhost="$DB_HOST" \
-                --skip-check \
-                --allow-root
+              cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php && \
+              sed -i "s/database_name_here/${DB_NAME}/" /var/www/html/wordpress/wp-config.php && \
+              sed -i "s/username_here/${DB_USER}/"       /var/www/html/wordpress/wp-config.php && \
+              sed -i "s/password_here/${DB_PASSWORD}/"   /var/www/html/wordpress/wp-config.php && \
+              sed -i "s/localhost/${DB_HOST}/"           /var/www/html/wordpress/wp-config.php && \
+              sed -i "/define( 'WP_DEBUG', false );/d"   /var/www/html/wordpress/wp-config.php && \
+              echo "define( 'WP_DEBUG', true );"       >> /var/www/html/wordpress/wp-config.php && \
+              if ! grep -q "define( 'FS_METHOD', 'direct' );" /var/www/html/wordpress/wp-config.php; then \
+                echo "define( 'FS_METHOD', 'direct' );"     >> /var/www/html/wordpress/wp-config.php; \
+              fi && \
+              sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" /var/www/html/wordpress/wp-config.php
+              echo "✅ wp-config.php templated"
               echo "🛠 Installing WordPress..."
               wp core install \
                 --url="$WP_URL" \
