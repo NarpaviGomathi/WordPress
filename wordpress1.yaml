@@ -50,6 +50,90 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      initContainers:
+        - name: init-db-check
+          image: appropriate/curl:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "⏳ Waiting for MariaDB at ${DB_HOST}:3306..."
+              until curl --silent tcp://${DB_HOST}:3306 >/dev/null 2>&1; do
+                sleep 2
+              done
+              echo "✅ MariaDB is up!"
+
+        - name: init-wordpress
+          image: gomathi747/wordpress:latest
+          command: ["/bin/bash", "-c"]
+          env:
+            - name: DB_HOST
+              value: "10.184.49.241"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-password
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: mariadb-name
+            - name: WP_URL
+              value: "http://localhost/wordpress"
+            - name: WP_TITLE
+              value: "My WordPress Site"
+            - name: WP_ADMIN_USER
+              value: "Gom@thi7777"
+            - name: WP_ADMIN_PASSWORD
+              value: "YourSecurePass"
+            - name: WP_ADMIN_EMAIL
+              value: "admin@example.com"
+          args:
+            - |
+              set -e
+              echo "🔁 Syncing Git repo..."
+              if [ ! -d "/var/www/html/wordpress/.git" ]; then
+                rm -rf /var/www/html/wordpress/*
+                git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git /var/www/html/wordpress
+              else
+                cd /var/www/html/wordpress && git pull origin main
+              fi
+
+              echo "🧹 Removing any old wp-config.php..."
+              rm -f /var/www/html/wordpress/wp-config.php
+
+              cd /var/www/html/wordpress
+
+              echo "⚙️ Generating wp-config.php..."
+              wp config create \
+                --dbname="$DB_NAME" \
+                --dbuser="$DB_USER" \
+                --dbpass="$DB_PASSWORD" \
+                --dbhost="$DB_HOST" \
+                --skip-check \
+                --allow-root
+
+              echo "🛠 Installing WordPress..."
+              wp core install \
+                --url="$WP_URL" \
+                --title="$WP_TITLE" \
+                --admin_user="$WP_ADMIN_USER" \
+                --admin_password="$WP_ADMIN_PASSWORD" \
+                --admin_email="$WP_ADMIN_EMAIL" \
+                --skip-email \
+                --allow-root
+
+              chown -R www-data:www-data /var/www/html/wordpress
+              chmod -R 755 /var/www/html/wordpress
+          volumeMounts:
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html/wordpress
+
       containers:
         - name: wordpress
           image: gomathi747/wordpress:latest
@@ -73,21 +157,12 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-name
-            # These are only used at build time; WordPress core install used localhost:
-            - name: WP_URL
-              value: "http://localhost/wordpress"
-            - name: WP_TITLE
-              value: "My WordPress Site"
-            - name: WP_ADMIN_USER
-              value: "Gom@thi7777"
-            - name: WP_ADMIN_PASSWORD
-              value: "admin123"
-            - name: WP_ADMIN_EMAIL
-              value: "admin@example.com"
           volumeMounts:
             - name: wordpress-persistent-storage
-              mountPath: /var/www/html
+              mountPath: /var/www/html/wordpress
+
       volumes:
         - name: wordpress-persistent-storage
           persistentVolumeClaim:
             claimName: wp-pv-claim
+
