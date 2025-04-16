@@ -50,6 +50,7 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      initContainers:
         - name: init-wordpress
           image: gomathi747/wordpress:latest
           command: ["/bin/bash", "-c"]
@@ -95,9 +96,22 @@ spec:
               rm -f /var/www/html/wordpress/wp-config.php
               cd /var/www/html/wordpress
               echo "⚙️ Generating wp-config.php..."
-              wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD" --dbhost="$DB_HOST" --skip-check --allow-root
+              wp config create \
+                --dbname="$DB_NAME" \
+                --dbuser="$DB_USER" \
+                --dbpass="$DB_PASSWORD" \
+                --dbhost="$DB_HOST" \
+                --skip-check \
+                --allow-root
               echo "🛠 Installing WordPress..."
-              wp core install --url="$WP_URL" --title="$WP_TITLE" --admin_user="$WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASSWORD" --admin_email="$WP_ADMIN_EMAIL" --skip-email --allow-root
+              wp core install \
+                --url="$WP_URL" \
+                --title="$WP_TITLE" \
+                --admin_user="$WP_ADMIN_USER" \
+                --admin_password="$WP_ADMIN_PASSWORD" \
+                --admin_email="$WP_ADMIN_EMAIL" \
+                --skip-email \
+                --allow-root
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
           volumeMounts:
