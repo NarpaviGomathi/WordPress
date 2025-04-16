@@ -58,18 +58,7 @@ RUN a2enmod rewrite
 RUN git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT} || \
     (echo "Retrying clone after failure..." && sleep 5 && git clone --depth=1 --branch main https://github.com/NarpaviGomathi/WordPress.git ${APACHE_ROOT}) && \
     chown -R www-data:www-data ${APACHE_ROOT} && \
-    chmod -R 755 ${APACHE_ROOT} && \
-    \
-    cd ${APACHE_ROOT} && \
-    \
-    wp core install \
-      --url="http://10.184.49.239:31282/wordpress" \
-      --title="My WordPress Site" \
-      --admin_user="Gom@thi7777"\
-      --admin_password="admin123" \
-      --admin_email="admin@example.com" \
-      --path=${APACHE_ROOT} \
-      --allow-root
+    chmod -R 755 ${APACHE_ROOT} 
 
 RUN chown -R www-data:www-data ${APACHE_ROOT} && chmod 755 -R ${APACHE_ROOT}
 
