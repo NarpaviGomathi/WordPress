@@ -73,59 +73,34 @@ spec:
                 secretKeyRef:
                   name: mariadb-secret
                   key: mariadb-name
-            
-  - name: WP_ADMIN_USER
-    valueFrom:
-      secretKeyRef:
-        name: wordpress-admin-secret
-        key: wp-admin-user
-  - name: WP_ADMIN_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: wordpress-admin-secret
-        key: wp-admin-password
-  - name: WP_ADMIN_EMAIL
-    valueFrom:
-      secretKeyRef:
-        name: wordpress-admin-secret
-        key: wp-admin-email
-  - name: WP_SITE_TITLE
-    valueFrom:
-      secretKeyRef:
-        name: wordpress-admin-secret
-        key: wp-site-title
-  - name: WP_SITE_URL
-    valueFrom:
-      secretKeyRef:
-        name: wordpress-admin-secret
-        key: wp-site-url
-
-# Wait for DB to be ready
-until wp db check --path=/var/www/html/wordpress --allow-root; do
-  echo "⏳ Waiting for database to be ready..."
-  sleep 5
-done
-
-# Check if already installed
-if ! wp core is-installed --path=/var/www/html/wordpress --allow-root; then
-  echo "⚙️ Installing WordPress..."
-  wp core install \
-    --url="${WP_SITE_URL}" \
-    --title="${WP_SITE_TITLE}" \
-    --admin_user="${WP_ADMIN_USER}" \
-    --admin_password="${WP_ADMIN_PASSWORD}" \
-    --admin_email="${WP_ADMIN_EMAIL}" \
-    --path=/var/www/html/wordpress \
-    --allow-root
-else
-  echo "✅ WordPress already installed."
-fi
-
-              
+            - name: WP_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-admin-secret
+                  key: wp-admin-user
+            - name: WP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-admin-secret
+                  key: wp-admin-password
+            - name: WP_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-admin-secret
+                  key: wp-admin-email
+            - name: WP_SITE_TITLE
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-admin-secret
+                  key: wp-site-title
+            - name: WP_SITE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-admin-secret
+                  key: wp-site-url
           args:
             - |
               set -e
-              echo " Syncing Git repo..."
               git config --global --add safe.directory /var/www/html/wordpress
               if [ ! -d "/var/www/html/wordpress/.git" ]; then
                 rm -rf /var/www/html/wordpress/*
@@ -136,14 +111,11 @@ fi
                 git clean -fd
                 git pull origin main
               fi
-
-              echo "Removing old wp-config.php..."
+              
               rm -f /var/www/html/wordpress/wp-config.php
-             
 
               cd /var/www/html/wordpress
-
-              echo " Generating wp-config.php from sample..."
+              
               cp wp-config-sample.php wp-config.php
               sed -i "s/database_name_here/${DB_NAME}/" wp-config.php
               sed -i "s/username_here/${DB_USER}/"       wp-config.php
@@ -156,11 +128,29 @@ fi
               fi
               sed -i "s|^\$table_prefix = .*|\$table_prefix = 'wp_';|" wp-config.php
 
-              echo "wp-config.php templated"
-
               chown www-data:www-data wp-config.php && chmod 644 wp-config.php
               chown -R www-data:www-data /var/www/html/wordpress
               chmod -R 755 /var/www/html/wordpress
+
+              echo " Waiting for database to be ready..."
+              until wp db check --path=/var/www/html/wordpress --allow-root; do
+                echo "Waiting..."
+                sleep 5
+              done
+
+              if ! wp core is-installed --path=/var/www/html/wordpress --allow-root; then
+                echo "Installing WordPress..."
+                wp core install \
+                  --url="${WP_SITE_URL}" \
+                  --title="${WP_SITE_TITLE}" \
+                  --admin_user="${WP_ADMIN_USER}" \
+                  --admin_password="${WP_ADMIN_PASSWORD}" \
+                  --admin_email="${WP_ADMIN_EMAIL}" \
+                  --path=/var/www/html/wordpress \
+                  --allow-root
+              else
+                echo "WordPress already installed."
+              fi
           volumeMounts:
             - name: wordpress-persistent-storage
               mountPath: /var/www/html/wordpress
