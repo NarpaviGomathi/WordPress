@@ -23,7 +23,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  storageClassName: rook-ceph-block
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
