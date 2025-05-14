@@ -28,10 +28,10 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local
-  volumeMode: Filesystem  # Always add this for local volumes
+  volumeMode: Filesystem
   local:
-    path: /var/www/html/wordpress 
-   nodeAffinity:
+    path: /var/www/html/wordpress
+  nodeAffinity:
     required:
       nodeSelectorTerms:
         - matchExpressions:
@@ -53,7 +53,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
 ---
 apiVersion: apps/v1
 kind: Deployment
