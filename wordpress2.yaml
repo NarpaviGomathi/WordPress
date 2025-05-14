@@ -30,7 +30,15 @@ spec:
   storageClassName: local
   volumeMode: Filesystem  # Always add this for local volumes
   local:
-    path: /var/www/html/wordpress  
+    path: /var/www/html/wordpress 
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8snewmaster
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
