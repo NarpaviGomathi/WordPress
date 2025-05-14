@@ -31,8 +31,6 @@ spec:
   volumeMode: Filesystem  # Always add this for local volumes
   local:
     path: /var/www/html/wordpress  
-  nodeSelector:
-      kubernetes.io/hostname: k8snewmaster 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -69,6 +67,8 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8snewmaster
       initContainers:
         - name: init-wordpress
           image: gomathi747/wordpress:latest
