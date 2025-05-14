@@ -16,6 +16,30 @@ spec:
     tier: frontend
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: wordpress
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local
+  local:
+    path: /var/www/html/wordpress  # Make sure this exists on the node
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8snewmaster 
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wp-pv-claim
@@ -28,7 +52,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
 ---
 apiVersion: apps/v1
 kind: Deployment
