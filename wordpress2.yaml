@@ -28,8 +28,9 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local
+  volumeMode: Filesystem  # Always add this for local volumes
   local:
-    path: /var/www/html/wordpress  # Make sure this exists on the node
+    path: /var/www/html/wordpress  
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -37,7 +38,7 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - k8snewmaster 
+                - k8snewmaster  
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -52,6 +53,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
+
 ---
 apiVersion: apps/v1
 kind: Deployment
